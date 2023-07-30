@@ -51,3 +51,10 @@ module.exports.signup_post = async (req, res) => {
 		res.status(400).json({ errors });
 	}
 };
+
+module.exports.signup2_post = async (req, res) => {
+	const files = req.files;
+	const { lookingFor, description, occupation, age } = req.body;
+
+	console.log(req.body, files, "received");
+};
