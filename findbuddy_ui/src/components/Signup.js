@@ -56,6 +56,24 @@ function Signup() {
 			}
 			if (data.user) {
 				console.log(data.user, "success!");
+				function getCookie(name) {
+					const cookies = document.cookie.split(";");
+					for (const cookie of cookies) {
+						const [cookieName, cookieValue] = cookie.split("=");
+						if (cookieName.trim() === name) {
+							return decodeURIComponent(cookieValue);
+						}
+					}
+					return null;
+				}
+
+				// Example: Reading a cookie with the name "myCookie"
+				const myCookieValue = getCookie("myCookie");
+				if (myCookieValue) {
+					console.log('Value of "myCookie":', myCookieValue);
+				} else {
+					console.log('Cookie "myCookie" not found or empty.');
+				}
 			}
 		} catch (err) {
 			console.log(err);

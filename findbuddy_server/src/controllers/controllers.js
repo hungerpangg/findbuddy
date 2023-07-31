@@ -1,5 +1,36 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const aws = require("aws-sdk");
+const multerS3 = require("multer-s3");
+
+const s3 = new aws.S3({
+	accessKeyId: process.env.S3_ACCESS_KEY,
+	secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+	region: process.env.S3_BUCKET_REGION,
+});
+
+const upload = multer({
+	storage: multerS3({
+		s3,
+		bucket: "findbuddy-pictures",
+		metadata: function (req, file, cb) {
+			cb(null, { fieldName: file.fieldname });
+		},
+		key: function (req, file, cb) {
+			// console.log(file, 'inside key')
+			cb(null, file.originalname);
+		},
+	}),
+});
+
+// create json web token
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (id) => {
+	return jwt.sign({ id }, "findbuddy-sg2023", {
+		expiresIn: maxAge,
+	});
+};
 
 // handle errors
 const handleErrors = (err) => {
@@ -45,6 +76,8 @@ module.exports.signup_post = async (req, res) => {
 
 	try {
 		const user = await User.create({ email, name, password, country });
+		const token = createToken(user._id);
+		res.cookie("jwt", token, { httpOnly: false, maxAge: maxAge * 1000, sameSite: 'None' });
 		res.status(201).json({ user: user._id });
 	} catch (err) {
 		const errors = handleErrors(err);
@@ -53,8 +86,14 @@ module.exports.signup_post = async (req, res) => {
 };
 
 module.exports.signup2_post = async (req, res) => {
-	const files = req.files;
-	const { lookingFor, description, occupation, age } = req.body;
+	const uploadArray = upload.array("files");
+	uploadArray(req, res, (err) => {
+		if (err) console.log(err);
+		console.log(req.files);
+	});
 
-	console.log(req.body, files, "received");
+	// const files = req.files;
+	// const { lookingFor, description, occupation, age } = req.body;
+
+	// console.log(req.body, files, "received");
 };
