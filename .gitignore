@@ -5,6 +5,7 @@ findbuddy_server/node_modules
 findbuddy_ui/node_modules
 /.pnp
 .pnp.js
+findbuddy_server/config.env
 
 # testing
 /coverage
