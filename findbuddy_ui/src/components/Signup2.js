@@ -42,6 +42,7 @@ function Signup() {
 			const res = await fetch("http://localhost:4000/signup2", {
 				method: "POST",
 				body: formData,
+				credentials: "include",
 			});
 			const data = await res.json();
 			console.log(data);
