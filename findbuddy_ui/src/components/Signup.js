@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
+	const navigate = useNavigate();
 	const [state, setState] = useState({
 		formDetails: {
 			email: "",
@@ -40,6 +42,9 @@ function Signup() {
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
 			});
+			if (res.redirected) {
+				window.location.href = res.url;
+			}
 			const data = await res.json();
 			console.log(data);
 			if (data.errors) {
@@ -76,6 +81,7 @@ function Signup() {
 					console.log('Cookie "myCookie" not found or empty.');
 				}
 			}
+			navigate("/signup2");
 		} catch (err) {
 			console.log(err);
 		}

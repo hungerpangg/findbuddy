@@ -6,7 +6,7 @@ function Signup() {
 			description: "",
 			lookingFor: "",
 			occupation: "",
-			school: "",
+			age: "",
 			images: [],
 		},
 		validateDetails: {},
@@ -112,8 +112,8 @@ function Signup() {
 							id="lookingFor"
 							onChange={handleChange}
 							value={state.formDetails.lookingFor}
-							className="form-control is-invalid"
-							placeholder="Required example textarea"
+							className="form-control"
+							placeholder="Placeholder"
 							// required
 						></textarea>
 						<p>
@@ -135,10 +135,10 @@ function Signup() {
 							Description
 						</label>
 						<textarea
-							className="form-control is-invalid"
+							className="form-control"
 							id="description"
 							name="description"
-							placeholder="Required example textarea"
+							placeholder="Placeholder"
 							// required
 						></textarea>
 						<p>
@@ -170,9 +170,11 @@ function Signup() {
 						</label>
 						<input
 							type="number"
+							id="age"
+							name="age"
 							onChange={handleChange}
+							value={state.formDetails.age}
 							className={`form-control ${isCountryValid}`}
-							id="country"
 						/>
 						<div className="invalid-feedback">
 							{state.validateDetails.country}
@@ -200,7 +202,7 @@ function Signup() {
 					</div>
 				</div>
 				<button type="submit" className="btn btn-primary">
-					Sign up
+					Submit
 				</button>
 			</form>
 		</div>

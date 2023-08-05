@@ -18,8 +18,13 @@ const upload = multer({
 			cb(null, { fieldName: file.fieldname });
 		},
 		key: function (req, file, cb) {
-			// console.log(file, 'inside key')
-			cb(null, file.originalname);
+			// console.log(file, 'inside key');
+			const token = req.cookies.jwt;
+			jwt.verify(token, "findbuddy-sg2023", (err, decodedToken) => {
+				console.log(decodedToken, "inside multer");
+				cb(null, decodedToken.id + "_" + file.originalname);
+			});
+			// cb(null, file.originalname);
 		},
 	}),
 });
@@ -90,10 +95,74 @@ module.exports.signup2_post = async (req, res) => {
 	uploadArray(req, res, (err) => {
 		if (err) console.log(err);
 		console.log(req.files);
+		console.log(req.body, "reqbody");
+		console.log(req.user, "request user");
+
+		const token = req.cookies.jwt;
+		if (token) {
+			jwt.verify(token, "findbuddy-sg2023", async (err, decodedToken) => {
+				if (err) {
+					console.log(err);
+				} else {
+					let pictureUrls = [];
+					const { lookingFor, description, occupation, age } = req.body;
+					// console.log(age, "lookingFor");
+					for (let file of req.files) {
+						// console.log(file.location);
+						pictureUrls.push(file.location);
+					}
+					let updatedData = {
+						lookingFor,
+						description,
+						occupation,
+						pictureUrls,
+						age: parseInt(age),
+					};
+					console.log(updatedData);
+					// console.log(decodedToken.id, "decoded");
+					let result = await User.updateOne(
+						{ _id: decodedToken.id },
+						{
+							$set: {
+								...updatedData,
+							},
+						}
+					);
+					if (result.modifiedCount === 1) {
+						console.log("User updated successfully");
+					} else {
+						console.log(result, "User not found or not updated");
+					}
+				}
+			});
+		} else {
+			console.log("token not right");
+		}
 	});
-
-	// const files = req.files;
-	// const { lookingFor, description, occupation, age } = req.body;
-
-	// console.log(req.body, files, "received");
 };
+
+module.exports.getProfile = (req, res) => {
+	console.log(req.user, "checkUser");
+	if (req.user) {
+		const { age, lookingFor, description, occupation, pictureUrls, name } =
+			req.user;
+		res
+			.status(201)
+			.json({
+				age,
+				lookingFor,
+				country,
+				description,
+				occupation,
+				pictureUrls,
+				name,
+			});
+	} else {
+		res.status(404).json({ error: "User not found/not authenticated" });
+	}
+};
+
+// const files = req.files;
+// const { lookingFor, description, occupation, age } = req.body;
+
+// console.log(req.body, files, "received");

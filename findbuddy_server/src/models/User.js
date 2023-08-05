@@ -21,6 +21,15 @@ const userSchema = new mongoose.Schema({
 	description: {
 		type: String,
 	},
+	lookingFor: {
+		type: String,
+	},
+	occupation: {
+		type: String,
+	},
+	age: {
+		type: Number,
+	},
 	pictureUrls: {
 		type: [
 			{
