@@ -3,8 +3,7 @@ const controller = require("../controllers/controllers");
 const multer = require("multer");
 const aws = require("aws-sdk");
 const multerS3 = require("multer-s3");
-const middleware = require("../middleware/authMiddleware");
-const {checkUser}=require('../middleware/authMiddleware');
+const { checkUser, getUser } = require("../middleware/authMiddleware");
 
 const s3 = new aws.S3({
 	accessKeyId: process.env.S3_ACCESS_KEY,
@@ -31,7 +30,7 @@ const s3 = new aws.S3({
 const router = Router();
 
 router.post("/signup", controller.signup_post);
-router.post("/signup2", middleware.checkUser, controller.signup2_post);
-router.get('/profile', checkUser, controller.getProfile);
+router.post("/signup2", checkUser, controller.signup2_post);
+router.get("/profile/:id", getUser, controller.getProfile);
 
 module.exports = router;

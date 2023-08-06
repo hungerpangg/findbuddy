@@ -136,6 +136,8 @@ function Signup() {
 						</label>
 						<textarea
 							className="form-control"
+							onChange={handleChange}
+							value={state.formDetails.description}
 							id="description"
 							name="description"
 							placeholder="Placeholder"

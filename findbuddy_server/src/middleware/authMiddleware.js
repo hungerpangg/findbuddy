@@ -40,3 +40,16 @@ module.exports.checkUser = (req, res, next) => {
 		next();
 	}
 };
+
+// get user
+module.exports.getUser = async (req, res, next) => {
+	const { id } = req.params;
+	// console.log(id, "iddddddd");
+	try {
+		const user = await User.findById(id);
+		req.user = user;
+		next();
+	} catch (err) {
+		console.log(err);
+	}
+};

@@ -144,19 +144,24 @@ module.exports.signup2_post = async (req, res) => {
 module.exports.getProfile = (req, res) => {
 	console.log(req.user, "checkUser");
 	if (req.user) {
-		const { age, lookingFor, description, occupation, pictureUrls, name } =
-			req.user;
-		res
-			.status(201)
-			.json({
-				age,
-				lookingFor,
-				country,
-				description,
-				occupation,
-				pictureUrls,
-				name,
-			});
+		const {
+			age,
+			lookingFor,
+			country,
+			description,
+			occupation,
+			pictureUrls,
+			name,
+		} = req.user;
+		res.status(201).json({
+			age,
+			lookingFor,
+			country,
+			description,
+			occupation,
+			pictureUrls,
+			name,
+		});
 	} else {
 		res.status(404).json({ error: "User not found/not authenticated" });
 	}
