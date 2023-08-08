@@ -32,5 +32,6 @@ const router = Router();
 router.post("/signup", controller.signup_post);
 router.post("/signup2", checkUser, controller.signup2_post);
 router.get("/profile/:id", getUser, controller.getProfile);
+router.post("/editprofile", controller.editProfile);
 
 module.exports = router;

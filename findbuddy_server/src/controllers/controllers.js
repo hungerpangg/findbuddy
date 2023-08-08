@@ -94,7 +94,7 @@ module.exports.signup2_post = async (req, res) => {
 	const uploadArray = upload.array("files");
 	uploadArray(req, res, (err) => {
 		if (err) console.log(err);
-		console.log(req.files);
+		console.log(req.files, "reqfiles");
 		console.log(req.body, "reqbody");
 		console.log(req.user, "request user");
 
@@ -165,6 +165,90 @@ module.exports.getProfile = (req, res) => {
 	} else {
 		res.status(404).json({ error: "User not found/not authenticated" });
 	}
+};
+
+module.exports.editProfile = (req, res) => {
+	const uploadArray = upload.array("files");
+	uploadArray(req, res, (err) => {
+		if (err) console.log(err);
+		console.log(req.files, "req files");
+		console.log(req.body, "reqbody");
+		console.log(req.user, "request user");
+		const token = req.cookies.jwt;
+		if (token) {
+			jwt.verify(token, "findbuddy-sg2023", async (err, decodedToken) => {
+				if (err) {
+					console.log(err);
+				} else {
+					let pictureUrls = [];
+					var { lookingFor, description, occupation, age, filestodelete } =
+						req.body;
+					if (filestodelete.length > 0) {
+						if (!Array.isArray(filestodelete)) {
+							filestodelete = [filestodelete];
+						}
+						console.log(filestodelete, "filestodelete");
+						const objectsToDelete = filestodelete.map((filename) => {
+							return { Key: filename };
+						});
+						const params = {
+							Bucket: "findbuddy-pictures",
+							Delete: {
+								Objects: objectsToDelete,
+							},
+						};
+						try {
+							const result = await s3.deleteObjects(params).promise();
+							console.log("Deleted objects:", result);
+						} catch (error) {
+							console.log("Error deleting objects", error);
+						}
+					}
+					// console.log(age, "lookingFor");
+					for (let file of req.files) {
+						// console.log(file.location);
+						pictureUrls.push(file.location);
+					}
+					let updatedData = {
+						lookingFor,
+						description,
+						occupation,
+						age: parseInt(age),
+					};
+					// console.log(decodedToken.id, "decoded");
+					let result = await User.updateOne(
+						{ _id: decodedToken.id },
+						{
+							$set: {
+								...updatedData,
+							},
+							$push: {
+								pictureUrls: { $each: pictureUrls },
+							},
+						}
+					);
+					if (filestodelete.length > 0) {
+						let deleteResult = await User.updateOne(
+							{ _id: decodedToken.id },
+							{
+								$pull: {
+									pictureUrls: { $in: filestodelete },
+								},
+							}
+						);
+						console.log(deleteResult, "deleteResult");
+					}
+					if (result.modifiedCount === 1) {
+						console.log("User updated successfully");
+					} else {
+						console.log(result, "User not found or not updated");
+					}
+				}
+			});
+		} else {
+			console.log("token not right");
+		}
+	});
 };
 
 // const files = req.files;

@@ -60,8 +60,29 @@ function Profile() {
 		getProfile();
 	}, []);
 
-	const handleEditSubmit = (e) => {
-		return null;
+	const handleEditSubmit = async (e) => {
+		e.preventDefault();
+		const formData = new FormData(e.target);
+		for (let i = 0; i < state.updateDetails.filesToAdd.length; i++) {
+			formData.append("files", state.updateDetails.filesToAdd[i]);
+		}
+		for (let i = 0; i < state.updateDetails.filesToDelete.length; i++) {
+			formData.append("filestodelete", state.updateDetails.filesToDelete[i]);
+		}
+		for (let [key, value] of formData.entries()) {
+			console.log(key, value);
+		}
+		try {
+			const res = await fetch("http://localhost:4000/editprofile", {
+				method: "POST",
+				body: formData,
+				credentials: "include",
+			});
+			const data = await res.json();
+			console.log(data);
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	const handleChange = (e) => {
@@ -169,6 +190,10 @@ function Profile() {
 						...prevData.updateDetails,
 						filesToDelete: [],
 						filesToAdd: [],
+						description: "",
+						lookingFor: "",
+						occupation: "",
+						age: "",
 					},
 					selectedFiles: editPictures,
 				};
