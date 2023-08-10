@@ -42,10 +42,11 @@ function Signup() {
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
 			});
-			if (res.redirected) {
-				window.location.href = res.url;
-			}
 			const data = await res.json();
+			if (data.redirected) {
+				navigate("/signup2");
+			}
+			console.log(data.redirected, "res.redirected");
 			console.log(data);
 			if (data.errors) {
 				let errors = data.errors;
@@ -81,7 +82,6 @@ function Signup() {
 					console.log('Cookie "myCookie" not found or empty.');
 				}
 			}
-			navigate("/signup2");
 		} catch (err) {
 			console.log(err);
 		}

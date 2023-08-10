@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
+	const navigate = useNavigate();
 	const [state, setState] = useState({
 		formDetails: {
 			description: "",
@@ -45,7 +47,10 @@ function Signup() {
 				credentials: "include",
 			});
 			const data = await res.json();
-			console.log(data);
+			if (data.redirected) {
+				navigate(`/profile/${data.id}`);
+			}
+			console.log(data, "data signup2");
 			// if (data.errors) {
 			// 	let errors = data.errors;
 			// 	let newError = { email: "", password: "", name: "", country: "" };

@@ -13,6 +13,7 @@ function Profile() {
 			lookingFor: "",
 			occupation: "",
 			age: "",
+			country: "",
 			pictureUrls: [],
 		},
 		updateDetails: {
@@ -48,6 +49,10 @@ function Profile() {
 						occupation: data.occupation,
 						age: data.age,
 						pictureUrls: data.pictureUrls,
+						country: data.country,
+					},
+					updateDetails: {
+						...prevState.updateDetails,
 					},
 				};
 			});
@@ -190,10 +195,10 @@ function Profile() {
 						...prevData.updateDetails,
 						filesToDelete: [],
 						filesToAdd: [],
-						description: "",
-						lookingFor: "",
-						occupation: "",
-						age: "",
+						description: prevData.formDetails.description,
+						lookingFor: prevData.formDetails.lookingFor,
+						occupation: prevData.formDetails.occupation,
+						age: prevData.formDetails.age,
 					},
 					selectedFiles: editPictures,
 				};
@@ -393,7 +398,7 @@ function Profile() {
 						<div className="col-sm-4 d-flex align-items-center">
 							<ul className="list-unstyled">
 								<li>
-									<span>Country: {state.formDetails.lookingFor}</span>
+									<span>Country: {state.formDetails.country}</span>
 								</li>
 								<li>
 									<span>Occupation: {state.formDetails.occupation}</span>

@@ -83,7 +83,7 @@ module.exports.signup_post = async (req, res) => {
 		const user = await User.create({ email, name, password, country });
 		const token = createToken(user._id);
 		res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-		res.status(201).json({ user: user._id });
+		res.status(201).json({ redirected: true, user: user._id });
 	} catch (err) {
 		const errors = handleErrors(err);
 		res.status(400).json({ errors });
@@ -120,23 +120,31 @@ module.exports.signup2_post = async (req, res) => {
 					};
 					console.log(updatedData);
 					// console.log(decodedToken.id, "decoded");
-					let result = await User.updateOne(
-						{ _id: decodedToken.id },
-						{
-							$set: {
-								...updatedData,
-							},
+					try {
+						let result = await User.updateOne(
+							{ _id: decodedToken.id },
+							{
+								$set: {
+									...updatedData,
+								},
+							}
+						);
+						if (result.modifiedCount === 1) {
+							console.log("Document updated successfully.");
+							res
+								.status(200)
+								.json({ redirected: true, ok: true, id: decodedToken.id });
+						} else {
+							console.log(result, "No documents were modified.");
 						}
-					);
-					if (result.modifiedCount === 1) {
-						console.log("User updated successfully");
-					} else {
-						console.log(result, "User not found or not updated");
+					} catch (err) {
+						console.log("An error occured", err.message);
+						res.status(404).json({ message: err.message });
 					}
 				}
 			});
 		} else {
-			console.log("token not right");
+			console.log("Authentication failed");
 		}
 	});
 };
@@ -183,7 +191,7 @@ module.exports.editProfile = (req, res) => {
 					let pictureUrls = [];
 					var { lookingFor, description, occupation, age, filestodelete } =
 						req.body;
-					if (filestodelete.length > 0) {
+					if (filestodelete?.length > 0) {
 						if (!Array.isArray(filestodelete)) {
 							filestodelete = [filestodelete];
 						}
@@ -216,6 +224,7 @@ module.exports.editProfile = (req, res) => {
 						age: parseInt(age),
 					};
 					// console.log(decodedToken.id, "decoded");
+					try{
 					let result = await User.updateOne(
 						{ _id: decodedToken.id },
 						{
@@ -227,7 +236,7 @@ module.exports.editProfile = (req, res) => {
 							},
 						}
 					);
-					if (filestodelete.length > 0) {
+					if (filestodelete?.length > 0) {
 						let deleteResult = await User.updateOne(
 							{ _id: decodedToken.id },
 							{
@@ -238,15 +247,14 @@ module.exports.editProfile = (req, res) => {
 						);
 						console.log(deleteResult, "deleteResult");
 					}
-					if (result.modifiedCount === 1) {
-						console.log("User updated successfully");
-					} else {
-						console.log(result, "User not found or not updated");
-					}
+				}
+				catch(err){
+					console.log(result, err)
+				}
 				}
 			});
 		} else {
-			console.log("token not right");
+			console.log("Authentication failed");
 		}
 	});
 };

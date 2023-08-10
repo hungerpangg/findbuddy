@@ -5,13 +5,14 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Signin from "./components/Signin";
 import Signup2 from "./components/Signup2";
 import Profile from "./components/Profile";
+import SignedInNavbar from "./components/SignedInNavbar";
 import "./index.css";
 
 function App() {
 	return (
 		<div>
 			<Router>
-				<Navbar />
+				<SignedInNavbar />
 				<Routes>
 					{/* <Route path="/signin" /> */}
 					<Route path="/signin" element={<Signin />} />
