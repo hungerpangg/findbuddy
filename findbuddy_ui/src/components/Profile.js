@@ -84,7 +84,10 @@ function Profile() {
 				credentials: "include",
 			});
 			const data = await res.json();
-			console.log(data);
+			console.log(data, "successful save");
+			if (data.ok) {
+				setIsEditMode(false);
+			}
 		} catch (err) {
 			console.log(err);
 		}
@@ -132,6 +135,7 @@ function Profile() {
 		const selectedFiles = state.selectedFiles.filter((obj) => {
 			return obj["originalName"] !== originalName;
 		});
+		// if fullName length is 0, means file is newly added and not already there
 		if (obj[0].fullName.length === 0) {
 			const selectedAddFiles = state.updateDetails.filesToAdd.filter((obj) => {
 				return obj["name"] !== originalName;
@@ -203,6 +207,7 @@ function Profile() {
 					selectedFiles: editPictures,
 				};
 			});
+			navigate(`/profile/${id}`);
 		}
 	};
 

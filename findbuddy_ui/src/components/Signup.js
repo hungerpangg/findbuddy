@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthenticateContext from "../context/authenticate";
 
 function Signup() {
 	const navigate = useNavigate();
+	const { setAuthenticatedState } = useContext(AuthenticateContext);
 	const [state, setState] = useState({
 		formDetails: {
 			email: "",
@@ -45,6 +47,13 @@ function Signup() {
 			const data = await res.json();
 			if (data.redirected) {
 				navigate("/signup2");
+				const { email, userId } = data.data;
+				setAuthenticatedState((prevState) => ({
+					...prevState,
+					isAuthenticated: true,
+					email,
+					secret: userId,
+				}));
 			}
 			console.log(data.redirected, "res.redirected");
 			console.log(data);

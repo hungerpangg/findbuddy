@@ -31,7 +31,12 @@ const router = Router();
 
 router.post("/signup", controller.signup_post);
 router.post("/signup2", checkUser, controller.signup2_post);
+router.post("/login", controller.login);
+router.get("/logout", controller.logout);
 router.get("/profile/:id", getUser, controller.getProfile);
 router.post("/editprofile", controller.editProfile);
+router.post("/getusers", controller.getRelevantUsers);
+router.post("/updateuserbuddies", controller.updateUserBuddies);
+// router.post('/authenticateChat', getUser, controller.authenticateChat);
 
 module.exports = router;

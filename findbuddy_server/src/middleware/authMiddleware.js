@@ -43,13 +43,69 @@ module.exports.checkUser = (req, res, next) => {
 
 // get user
 module.exports.getUser = async (req, res, next) => {
-	const { id } = req.params;
-	// console.log(id, "iddddddd");
-	try {
-		const user = await User.findById(id);
-		req.user = user;
+	const token = req.cookies.jwt;
+	if (token) {
+		jwt.verify(token, "findbuddy-sg2023", async (err, decodedToken) => {
+			var id;
+			({ id } = req.params);
+			if (!id) {
+				({ userId: id } = req.body);
+			}
+			try {
+				const user = await User.findById(id);
+				req.user = user;
+				next();
+			} catch (err) {
+				res.locals.user = null;
+				next();
+			}
+		});
+	} else {
+		res.locals.user = null;
 		next();
-	} catch (err) {
-		console.log(err);
 	}
 };
+
+//update user buddy info
+// module.export.updateUser=async (req, res, next) => {
+// 	const token=req.cookies.jwt;
+// 	if (token){
+// 		jwt.verify(token, "findbuddy-sg2023", async (err, decodedToken) => {
+// 			const {acceptedBuddies, rejectedBuddies}=req.body;
+// 			try {
+// 				const user=await User.updateOne(
+// 					{ _id: decodedToken.id },
+// 					{
+// 						$set: {
+// 							...updatedData,
+// 						},
+// 						$push: {
+// 							pictureUrls: { $each: pictureUrls },
+// 						},
+// 					}
+// 				);
+// 			}
+// 		})
+// 	}
+// 	else {
+// 		res.locals.user=null;
+// 		next();
+// 	}
+// }
+
+//get users
+// module.export.getRelevantUsers = async (req, res, next) => {
+// 	const token = req.cookies.jwt;
+// 	if (token) {
+// 		jwt.verify(token, "findbuddy-sg2023", async (err, decodedToken) => {
+// 			const {}
+// 			try {
+// 				const users=await User.
+// 			}
+// 		})
+// 	}
+// 	else {
+// 		res.locals.user=null;
+// 		next();
+// 	}
+// };

@@ -5,3 +5,14 @@
 	height: 200px; /* Make the width and height equal to create a square */
 	border-radius: 50%;
 }
+
+.card {
+	margin: 0 auto; /* Added */
+	margin-top: 5em;
+	float: none; /* Added */
+	margin-bottom: 10px; /* Added */
+}
+
+.ql-editor {
+	white-space: unset !important;
+}

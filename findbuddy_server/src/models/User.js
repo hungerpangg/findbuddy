@@ -37,6 +37,8 @@ const userSchema = new mongoose.Schema({
 			},
 		],
 	},
+	rejectedBuddies: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+	acceptedBuddies: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
 	password: {
 		type: String,
 		required: [true, "Please enter a password"],
@@ -56,6 +58,7 @@ userSchema.statics.login = async function (email, password) {
 	const user = await this.findOne({ email });
 	if (user) {
 		const auth = await bcrypt.compare(password, user.password);
+		console.log(password, user.password, auth);
 		if (auth) {
 			return user;
 		}

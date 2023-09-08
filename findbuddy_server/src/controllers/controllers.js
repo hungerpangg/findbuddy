@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const aws = require("aws-sdk");
 const multerS3 = require("multer-s3");
+const axios = require("axios");
 
 const s3 = new aws.S3({
 	accessKeyId: process.env.S3_ACCESS_KEY,
@@ -77,13 +78,24 @@ const handleErrors = (err) => {
 
 module.exports.signup_post = async (req, res) => {
 	console.log(req.body, "req body ----------------");
-	const { email, name, password, country } = req.body;
+	var { email, name, password, country } = req.body;
 
 	try {
 		const user = await User.create({ email, name, password, country });
 		const token = createToken(user._id);
-		res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-		res.status(201).json({ redirected: true, user: user._id });
+		res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+		var { email, _id, name } = user;
+		const userId = _id.toString();
+		const r = await axios.put(
+			"https://api.chatengine.io/users/",
+			{
+				username: email,
+				secret: userId,
+				first_name: name,
+			},
+			{ headers: { "private-key": "d2e2907d-c2b7-4472-bf8a-2b5f2fcb3698" } }
+		);
+		res.status(201).json({ redirected: true, data: { email, userId } });
 	} catch (err) {
 		const errors = handleErrors(err);
 		res.status(400).json({ errors });
@@ -224,33 +236,33 @@ module.exports.editProfile = (req, res) => {
 						age: parseInt(age),
 					};
 					// console.log(decodedToken.id, "decoded");
-					try{
-					let result = await User.updateOne(
-						{ _id: decodedToken.id },
-						{
-							$set: {
-								...updatedData,
-							},
-							$push: {
-								pictureUrls: { $each: pictureUrls },
-							},
-						}
-					);
-					if (filestodelete?.length > 0) {
-						let deleteResult = await User.updateOne(
+					try {
+						let result = await User.updateOne(
 							{ _id: decodedToken.id },
 							{
-								$pull: {
-									pictureUrls: { $in: filestodelete },
+								$set: {
+									...updatedData,
+								},
+								$push: {
+									pictureUrls: { $each: pictureUrls },
 								},
 							}
 						);
-						console.log(deleteResult, "deleteResult");
+						if (filestodelete?.length > 0) {
+							let deleteResult = await User.updateOne(
+								{ _id: decodedToken.id },
+								{
+									$pull: {
+										pictureUrls: { $in: filestodelete },
+									},
+								}
+							);
+							console.log(deleteResult, "deleteResult");
+						}
+						res.status(201).json({ ok: true, redirected: true });
+					} catch (err) {
+						console.log(result, err);
 					}
-				}
-				catch(err){
-					console.log(result, err)
-				}
 				}
 			});
 		} else {
@@ -258,6 +270,100 @@ module.exports.editProfile = (req, res) => {
 		}
 	});
 };
+
+module.exports.login = async (req, res) => {
+	var { email, password } = req.body;
+	console.log(email, password);
+
+	try {
+		const user = await User.login(email, password);
+		const token = createToken(user._id);
+		res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+		var { email, _id, name } = user;
+		const userId = _id.toString();
+		// const r = await axios.put(
+		// 	"https://api.chatengine.io/users/",
+		// 	{
+		// 		username: email,
+		// 		secret: userId,
+		// 		first_name: name,
+		// 	},
+		// 	{ headers: { "private-key": "d2e2907d-c2b7-4472-bf8a-2b5f2fcb3698" } }
+		// );
+		res.status(200).json({
+			redirected: true,
+			data: { email, userId },
+		});
+	} catch (err) {
+		console.log(err);
+		const errors = handleErrors(err);
+		res.status(400).json({ errors });
+	}
+};
+
+module.exports.updateUserBuddies = async (req, res) => {
+	const { acceptedBuddies, rejectedBuddies, userId } = req.body;
+	try {
+		const user = await User.findById(userId);
+		user.rejectedBuddies.push(...rejectedBuddies);
+		user.acceptedBuddies.push(...acceptedBuddies);
+		const updatedUser = await user.save();
+		console.log(updatedUser, "Updated user");
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+module.exports.getRelevantUsers = async (req, res) => {
+	const { userId } = req.body;
+	try {
+		const user = await User.findById(userId);
+		// user.rejectedBuddies = [];
+		// user.acceptedBuddies = [];
+		// await user.save();
+		const seenBuddies = [
+			...user.rejectedBuddies,
+			...user.acceptedBuddies,
+			user._id.toString(),
+		];
+		console.log(seenBuddies, "Seen");
+		const users = await User.find({ _id: { $nin: seenBuddies } }).limit(5);
+		res.status(201).json(users);
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+module.exports.logout = (req, res) => {
+	res.cookie("jwt", "", { maxAge: 1 });
+	res.status(200).json({ redirected: true });
+};
+
+// module.exports.authenticateChat = async (req, res) => {
+// 	const { userId } = req.body;
+// 	const { name, email, _id } = req.user;
+// 	// const userId = _id.toString();
+// 	console.log(userId, userId.length, email);
+// 	try {
+// 		const r = await axios.put(
+// 			"https://api.chatengine.io/users/",
+// 			{
+// 				username: email,
+// 				secret: userId,
+// 				first_name: name,
+// 			},
+// 			{ headers: { "private-key": "d2e2907d-c2b7-4472-bf8a-2b5f2fcb3698" } }
+// 		);
+// 		const { username, secret, first_name } = r.data;
+// 		console.log(r.data);
+// 		res
+// 			.status(201)
+// 			.json({ ok: true, data: { username, secret: userId, first_name } });
+// 	} catch (err) {
+// 		console.log(err.message);
+// 		res.status(400).json({ ok: false, err });
+// 	}
+// };
 
 // const files = req.files;
 // const { lookingFor, description, occupation, age } = req.body;
