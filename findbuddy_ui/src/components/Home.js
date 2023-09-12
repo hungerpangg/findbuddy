@@ -1,5 +1,5 @@
 import { current } from "immer";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import AuthenticateContext from "../context/authenticate";
 
 function Home() {
@@ -24,6 +24,11 @@ function Home() {
 		fetch: false,
 	});
 
+	const acceptedBuddiesRef = useRef();
+	acceptedBuddiesRef.current = state.acceptedBuddies;
+	const rejectedBuddiesRef = useRef();
+	rejectedBuddiesRef.current = state.rejectedBuddies;
+
 	const getProfiles = async () => {
 		try {
 			const res = await fetch(`http://localhost:4000/getusers`, {
@@ -35,10 +40,13 @@ function Home() {
 			const data = await res.json();
 			setState((prevState) => ({
 				...prevState,
+				acceptedBuddies: [],
+				rejectedBuddies: [],
 				listOfProfiles: data,
 				currentProfile: data[0],
+				fetch: false,
 			}));
-			console.log(data);
+			// console.log(data);
 		} catch (err) {
 			console.log(err);
 		}
@@ -53,8 +61,9 @@ function Home() {
 		// 	"64ef0847f740862d5abea120",
 		// 	"64ef08f6f740862d5abea128",
 		// ];
-		const acceptedBuddies = state.acceptedBuddies;
-		const rejectedBuddies = state.rejectedBuddies;
+		const acceptedBuddies = acceptedBuddiesRef.current;
+		const rejectedBuddies = rejectedBuddiesRef.current;
+		// console.log(acceptedBuddies, "accepetedBuddies in updateuser");
 		try {
 			const res = await fetch(`http://localhost:4000/updateuserbuddies`, {
 				method: "POST",
@@ -62,7 +71,12 @@ function Home() {
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
 			});
-			console.log("updateUser ran!");
+			console.log("updateUser ran!", res);
+			if (res.status === 200) {
+				const data = await res.json();
+				console.log(data, "update user returned");
+				return;
+			}
 			// setState((prevState) => ({
 			// 	...prevState,
 			// }));
@@ -73,13 +87,17 @@ function Home() {
 
 	const addBuddy = () => {
 		var fetch = false;
+		console.log("i ran");
 		if (state.listOfProfiles.length <= 1) {
+			console.log("i ran");
 			fetch = true;
 		}
 		var newList = state.listOfProfiles;
 		newList.shift();
 		var newAcceptedBuddies = state.acceptedBuddies;
 		newAcceptedBuddies.push(state.currentProfile);
+		// await updateUser();
+		// console.log("update user done");
 		setState((prevState) => ({
 			...prevState,
 			currentProfile: newList[0],
@@ -91,7 +109,9 @@ function Home() {
 
 	const rejectBuddy = () => {
 		var fetch = false;
+		console.log("i ran");
 		if (state.listOfProfiles.length <= 1) {
+			console.log("i ran");
 			fetch = true;
 		}
 		var newList = state.listOfProfiles;
@@ -108,6 +128,7 @@ function Home() {
 	};
 
 	useEffect(() => {
+		// setTimeout(getProfiles, 500);
 		getProfiles();
 		window.addEventListener("beforeunload", updateUser);
 		return () => {
@@ -119,14 +140,14 @@ function Home() {
 	var renderedImages = [];
 	var renderedIndicators = [];
 	if (state.currentProfile?.pictureUrls?.length > 0) {
-		renderedImages = state.currentProfile.pictureUrls.map((url, index) => {
+		renderedImages = state.currentProfile?.pictureUrls.map((url, index) => {
 			return (
 				<div class={`carousel-item ${index === 0 && "active"}`}>
 					<img class="d-block w-100" src={url} alt="First slide" />
 				</div>
 			);
 		});
-		renderedIndicators = state.currentProfile.pictureUrls.map((url, index) => {
+		renderedIndicators = state.currentProfile?.pictureUrls.map((url, index) => {
 			return (
 				<li
 					data-bs-target="#carouselExampleIndicators"
@@ -164,7 +185,7 @@ function Home() {
 	// 		.catch((error) => console.log("error", error));
 	// };
 
-	console.log(state, "state");
+	console.log(state, "state", acceptedBuddiesRef.current, "useref");
 
 	return (
 		<div>
@@ -174,7 +195,7 @@ function Home() {
 				</div>
 				<div class="card" style={{ width: "20rem", margin: "2em 3em" }}>
 					<h5 class="card-title" style={{ margin: "1em auto" }}>
-						{state.currentProfile.name}
+						{state.currentProfile?.name}
 					</h5>
 					<div
 						id="carouselExampleIndicators"
@@ -240,25 +261,43 @@ function Home() {
 					</div>
 					<div class="card-body">
 						<p class="card-text">
-							<h5 style={{ textAlign: "center" }}>Looking for</h5>
-							{state.currentProfile.lookingFor}
+							<span
+								style={{
+									textAlign: "start",
+									fontWeight: "bold",
+									display: "block",
+								}}
+							>
+								Looking for
+							</span>
+							{state.currentProfile?.lookingFor}
 						</p>
 						<p class="card-text">
-							<h5 style={{ textAlign: "center" }}>Description</h5>
-							{state.currentProfile.description}
+							<span
+								style={{
+									textAlign: "start",
+									fontWeight: "bold",
+									display: "block",
+								}}
+							>
+								Description
+							</span>
+							{state.currentProfile?.description}
 						</p>
 						<ul class="list-group list-group-flush">
 							{state.currentProfile?.country?.length > 0 && (
 								<li class="list-group-item">
-									Country: {state.currentProfile.country}
+									Country: {state.currentProfile?.country}
 								</li>
 							)}
-							{typeof state.currentProfile.age === "number" && (
-								<li class="list-group-item">Age: {state.currentProfile.age}</li>
+							{typeof state.currentProfile?.age === "number" && (
+								<li class="list-group-item">
+									Age: {state.currentProfile?.age}
+								</li>
 							)}
 							{state.currentProfile?.occupation?.length > 0 && (
 								<li class="list-group-item">
-									Occupation: {state.currentProfile.occupation}
+									Occupation: {state.currentProfile?.occupation}
 								</li>
 							)}
 						</ul>

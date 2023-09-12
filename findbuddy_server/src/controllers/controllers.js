@@ -309,6 +309,7 @@ module.exports.updateUserBuddies = async (req, res) => {
 		user.acceptedBuddies.push(...acceptedBuddies);
 		const updatedUser = await user.save();
 		console.log(updatedUser, "Updated user");
+		res.status(200).json({ ok: true, data: updatedUser });
 	} catch (err) {
 		console.log(err);
 	}
