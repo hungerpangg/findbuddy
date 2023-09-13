@@ -37,6 +37,7 @@ router.get("/profile/:id", getUser, controller.getProfile);
 router.post("/editprofile", controller.editProfile);
 router.post("/getusers", controller.getRelevantUsers);
 router.post("/updateuserbuddies", controller.updateUserBuddies);
+// router.post("/createchat", controller.createChat);
 // router.post('/authenticateChat', getUser, controller.authenticateChat);
 
 module.exports = router;

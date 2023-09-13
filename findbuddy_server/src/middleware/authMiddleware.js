@@ -51,13 +51,26 @@ module.exports.getUser = async (req, res, next) => {
 			if (!id) {
 				({ userId: id } = req.body);
 			}
-			try {
-				const user = await User.findById(id);
-				req.user = user;
-				next();
-			} catch (err) {
-				res.locals.user = null;
-				next();
+			if (id.includes("@")) {
+				try {
+					const user = await User.findOne({ email: id });
+					console.log(user, "user email");
+					req.user = user;
+					next();
+				} catch (err) {
+					console.log("cannot find");
+					res.locals.user = null;
+					next();
+				}
+			} else {
+				try {
+					const user = await User.findById(id);
+					req.user = user;
+					next();
+				} catch (err) {
+					res.locals.user = null;
+					next();
+				}
 			}
 		});
 	} else {

@@ -42,6 +42,7 @@ const createToken = (id) => {
 const handleErrors = (err) => {
 	// console.log(err);
 	console.log(err.errors, "err.errors");
+	console.log(err);
 	// console.log(err.message, 'message');
 	// console.log(err._message, '_message');
 	// let errors = { email: '', password: '' };
@@ -93,7 +94,7 @@ module.exports.signup_post = async (req, res) => {
 				secret: userId,
 				first_name: name,
 			},
-			{ headers: { "private-key": "d2e2907d-c2b7-4472-bf8a-2b5f2fcb3698" } }
+			{ headers: { "private-key": "e35f6993-6750-49ff-ba12-b410cf57ac88" } }
 		);
 		res.status(201).json({ redirected: true, data: { email, userId } });
 	} catch (err) {
@@ -165,6 +166,7 @@ module.exports.getProfile = (req, res) => {
 	console.log(req.user, "checkUser");
 	if (req.user) {
 		const {
+			email,
 			age,
 			lookingFor,
 			country,
@@ -174,6 +176,7 @@ module.exports.getProfile = (req, res) => {
 			name,
 		} = req.user;
 		res.status(201).json({
+			email,
 			age,
 			lookingFor,
 			country,
@@ -317,6 +320,7 @@ module.exports.updateUserBuddies = async (req, res) => {
 
 module.exports.getRelevantUsers = async (req, res) => {
 	const { userId } = req.body;
+	console.log(userId, "useId");
 	try {
 		const user = await User.findById(userId);
 		// user.rejectedBuddies = [];
@@ -334,6 +338,30 @@ module.exports.getRelevantUsers = async (req, res) => {
 		console.log(err);
 	}
 };
+
+// module.exports.createChat=(req, res)=>{
+// 	var data = '{\n    "usernames": ["adam_la_morre", "bob_baker", "wendy_walker"],\n    "title": "Another Surprise Party!",\n    "is_direct_chat": false\n}';
+
+// var config = {
+//   method: 'put',
+// maxBodyLength: Infinity,
+//   url: 'https://api.chatengine.io/chats/',
+//   headers: {
+//     'Project-ID': '{{project_id}}',
+//     'User-Name': '{{user_name}}',
+//     'User-Secret': '{{user_secret}}'
+//   },
+//   data : data
+// };
+
+// axios(config)
+// .then(function (response) {
+//   console.log(JSON.stringify(response.data));
+// })
+// .catch(function (error) {
+//   console.log(error);
+// });
+// }
 
 module.exports.logout = (req, res) => {
 	res.cookie("jwt", "", { maxAge: 1 });

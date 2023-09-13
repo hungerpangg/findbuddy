@@ -1,4 +1,3 @@
-import { current } from "immer";
 import { useState, useEffect, useContext, useRef } from "react";
 import AuthenticateContext from "../context/authenticate";
 
@@ -6,7 +5,7 @@ function Home() {
 	const noProfilePicture =
 		"https://findbuddy-pictures.s3.ap-southeast-1.amazonaws.com/no-profile-picture.jpeg";
 	const {
-		authenticatedState: { userId },
+		authenticatedState: { userId, email, secret },
 	} = useContext(AuthenticateContext);
 	const [imageIndex, setImageIndex] = useState(0);
 	const [state, setState] = useState({
@@ -23,6 +22,8 @@ function Home() {
 		rejectedBuddies: [],
 		fetch: false,
 	});
+
+	console.log(userId, "userrrrrrrrrrrId");
 
 	const acceptedBuddiesRef = useRef();
 	acceptedBuddiesRef.current = state.acceptedBuddies;
@@ -86,11 +87,11 @@ function Home() {
 	};
 
 	const addBuddy = () => {
-		var fetch = false;
+		var fetchState = false;
 		console.log("i ran");
 		if (state.listOfProfiles.length <= 1) {
 			console.log("i ran");
-			fetch = true;
+			fetchState = true;
 		}
 		var newList = state.listOfProfiles;
 		newList.shift();
@@ -98,12 +99,37 @@ function Home() {
 		newAcceptedBuddies.push(state.currentProfile);
 		// await updateUser();
 		// console.log("update user done");
+		console.log(state.currentProfile.email, email, secret);
+		try {
+			var raw = {
+				usernames: [state.currentProfile.email],
+				is_direct_chat: true,
+			};
+
+			var requestOptions = {
+				method: "Put",
+				headers: {
+					"Project-ID": "00b0b622-9275-438f-9de0-2d9dff028a21",
+					"User-Name": email,
+					"User-Secret": secret,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(raw),
+			};
+
+			fetch("https://api.chatengine.io/chats/", requestOptions)
+				.then((response) => response.text())
+				.then((result) => console.log(result))
+				.catch((error) => console.log("error", error));
+		} catch (err) {
+			console.log(err, "create chat error");
+		}
 		setState((prevState) => ({
 			...prevState,
 			currentProfile: newList[0],
 			listOfProfiles: newList,
 			acceptedBuddies: newAcceptedBuddies,
-			fetch,
+			fetchState,
 		}));
 	};
 
@@ -129,13 +155,14 @@ function Home() {
 
 	useEffect(() => {
 		// setTimeout(getProfiles, 500);
+		console.log("use effect ran!");
 		getProfiles();
 		window.addEventListener("beforeunload", updateUser);
 		return () => {
 			window.removeEventListener("beforeunload", updateUser);
 			updateUser();
 		};
-	}, [state.fetch]);
+	}, [state.fetch, userId]);
 
 	var renderedImages = [];
 	var renderedIndicators = [];

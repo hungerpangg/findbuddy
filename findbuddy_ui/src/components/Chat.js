@@ -1,8 +1,10 @@
-import { useState, useEffect, useContext, useMemo } from "react";
+import { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthenticateContext from "../context/authenticate";
-import { ChatEngine } from "react-chat-engine";
+import { ChatEngine, ChatHeader, ChatSettingsTop } from "react-chat-engine";
 
 function Chat() {
+	const navigate = useNavigate();
 	const {
 		authenticatedState: { userId, email, secret },
 	} = useContext(AuthenticateContext);
@@ -11,38 +13,53 @@ function Chat() {
 		secret,
 	});
 
-	// useEffect(() => {
-	// 	fetch("http://localhost:4000/authenticateChat", {
-	// 		method: "POST",
-	// 		body: JSON.stringify({ userId }),
-	// 		headers: { "Content-Type": "application/json" },
-	// 	})
-	// 		.then((res) => {
-	// 			return res.json();
-	// 		})
-	// 		.then((data) => {
-	// 			const { username, secret } = data.data;
-	// 			console.log(username, secret);
-	// 			setCurrentUser((prevState) => {
-	// 				return {
-	// 					...prevState,
-	// 					username,
-	// 					secret,
-	// 				};
-	// 			});
-	// 		})
-	// 		.catch((err) => console.log(err));
-	// }, []);
+	useEffect(() => {
+		setCurrentUser((prevState) => ({
+			...prevState,
+			username: email,
+			secret,
+		}));
+	}, [userId]);
 
 	console.log(currentUser, "currentUser");
+
+	const handleChatSettingsTopClick = (chat) => {
+		console.log(chat);
+		const { people } = chat;
+		const target = people.filter((each) => {
+			return each.person.username !== currentUser.username;
+		});
+		const targetEmail = target[0].person.username;
+		navigate(`/profile/${targetEmail}`);
+	};
 
 	return (
 		currentUser.username.length > 0 && (
 			<ChatEngine
-				projectID="7e212bf9-67c2-4d70-b9f3-d6a61962d56a"
+				projectID="
+                00b0b622-9275-438f-9de0-2d9dff028a21"
 				userName={currentUser.username}
 				userSecret={currentUser.secret}
-			/>
+				// Customize UI
+				// renderChatHeader={(chat) => (
+				// 	<div onClick={handleChatHeader} style={{ cursor: "pointer" }}>
+				// 		<ChatHeader />
+				// 	</div>
+				// )}
+				renderPeopleSettings={(creds, chat) => ""}
+				renderPhotosSettings={(chat) => ""}
+				renderChatSettingsTop={(creds, chat) => (
+					<div
+						onClick={() => {
+							handleChatSettingsTopClick(chat);
+						}}
+						style={{ cursor: "pointer" }}
+					>
+						{/* {console.log(chat)} */}
+						<ChatSettingsTop />
+					</div>
+				)}
+			></ChatEngine>
 		)
 	);
 }
