@@ -1,5 +1,9 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import AuthenticateContext from "../context/authenticate";
+import Match from "./Match";
+import { FaSearch } from "react-icons/fa";
+import * as bootstrap from "bootstrap";
+// window.bootstrap = bootstrap;
 
 function Home() {
 	const noProfilePicture =
@@ -9,26 +13,89 @@ function Home() {
 	} = useContext(AuthenticateContext);
 	const [imageIndex, setImageIndex] = useState(0);
 	const [state, setState] = useState({
-		name: "",
-		country: "",
-		occupation: "",
-		age: "",
-		lookingFor: "",
-		description: "",
-		pictureUrls: [],
+		searchValue: "",
+		previousProfile: {},
 		currentProfile: {},
 		listOfProfiles: [],
-		acceptedBuddies: [],
-		rejectedBuddies: [],
 		fetch: false,
 	});
 
-	console.log(userId, "userrrrrrrrrrrId");
+	const handleModal = () => {
+		const myModal = document.getElementById("exampleModal2");
+		const bootstrapModal = new bootstrap.Modal(myModal);
+		bootstrapModal.show();
+	};
+
+	const hideModal = () => {
+		const myModal = document.getElementById("exampleModal2");
+		const bootstrapModal = new bootstrap.Modal(myModal);
+		bootstrapModal.hide();
+	};
 
 	const acceptedBuddiesRef = useRef();
 	acceptedBuddiesRef.current = state.acceptedBuddies;
 	const rejectedBuddiesRef = useRef();
 	rejectedBuddiesRef.current = state.rejectedBuddies;
+
+	const handleNextProfileAction = () => {
+		// handle frontend
+		var fetchState = false;
+		if (state.listOfProfiles.length <= 1) {
+			fetchState = true;
+		}
+		var newList = state.listOfProfiles;
+		var previousProfile = newList.shift();
+		setState((prevState) => ({
+			...prevState,
+			previousProfile,
+			currentProfile: newList[0],
+			listOfProfiles: newList,
+			fetch: fetchState,
+		}));
+	};
+
+	const handleLike = async () => {
+		handleNextProfileAction();
+		try {
+			const res = await fetch(`http://localhost:4000/like`, {
+				method: "POST",
+				body: JSON.stringify({
+					senderId: userId,
+					receiverId: state.currentProfile?._id,
+					senderEmail: email,
+					receiverEmail: state.currentProfile.email,
+				}),
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+			});
+			const data = await res.json();
+			console.log(data);
+			if (data.mutual) {
+				handleModal();
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const handleReject = async () => {
+		handleNextProfileAction();
+		try {
+			const res = await fetch(`http://localhost:4000/rejection`, {
+				method: "POST",
+				body: JSON.stringify({
+					senderId: userId,
+					receiverId: state.currentProfile?._id,
+				}),
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+			});
+			const data = await res.json();
+			console.log(data);
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
 	const getProfiles = async () => {
 		try {
@@ -41,50 +108,35 @@ function Home() {
 			const data = await res.json();
 			setState((prevState) => ({
 				...prevState,
-				acceptedBuddies: [],
-				rejectedBuddies: [],
 				listOfProfiles: data,
 				currentProfile: data[0],
 				fetch: false,
 			}));
-			// console.log(data);
 		} catch (err) {
 			console.log(err);
 		}
 	};
 
-	const updateUser = async () => {
-		// const rejectedBuddies = [
-		// 	"64c93893bfef3bf21f08e315",
-		// 	"64cbd99c0a2f35752a0d0bac",
-		// ];
-		// const acceptedBuddies = [
-		// 	"64ef0847f740862d5abea120",
-		// 	"64ef08f6f740862d5abea128",
-		// ];
-		const acceptedBuddies = acceptedBuddiesRef.current;
-		const rejectedBuddies = rejectedBuddiesRef.current;
-		// console.log(acceptedBuddies, "accepetedBuddies in updateuser");
-		try {
-			const res = await fetch(`http://localhost:4000/updateuserbuddies`, {
-				method: "POST",
-				body: JSON.stringify({ userId, rejectedBuddies, acceptedBuddies }),
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-			});
-			console.log("updateUser ran!", res);
-			if (res.status === 200) {
-				const data = await res.json();
-				console.log(data, "update user returned");
-				return;
-			}
-			// setState((prevState) => ({
-			// 	...prevState,
-			// }));
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	// const updateUser = async () => {
+	// 	const acceptedBuddies = acceptedBuddiesRef.current;
+	// 	const rejectedBuddies = rejectedBuddiesRef.current;
+	// 	try {
+	// 		const res = await fetch(`http://localhost:4000/updateuserbuddies`, {
+	// 			method: "POST",
+	// 			body: JSON.stringify({ userId, rejectedBuddies, acceptedBuddies }),
+	// 			headers: { "Content-Type": "application/json" },
+	// 			credentials: "include",
+	// 		});
+	// 		console.log("updateUser ran!", res);
+	// 		if (res.status === 200) {
+	// 			const data = await res.json();
+	// 			console.log(data, "update user returned");
+	// 			return;
+	// 		}
+	// 	} catch (err) {
+	// 		console.log(err);
+	// 	}
+	// };
 
 	const addBuddy = () => {
 		var fetchState = false;
@@ -153,15 +205,37 @@ function Home() {
 		}));
 	};
 
+	const handleSearchChange = (e) => {
+		setState((prevState) => ({
+			...prevState,
+			searchValue: e.target.value,
+		}));
+	};
+
+	const handleSearchSubmit = async () => {
+		try {
+			const res = await fetch(`http://localhost:4000/getsearchedusers`, {
+				method: "POST",
+				body: JSON.stringify({ searchValue: state.searchValue, userId }),
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+			});
+			const { data } = await res.json();
+			// console.log(data);
+			setState((prevState) => ({
+				...prevState,
+				listOfProfiles: data,
+				currentProfile: data[0],
+				fetch: false,
+			}));
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	useEffect(() => {
 		// setTimeout(getProfiles, 500);
-		console.log("use effect ran!");
 		getProfiles();
-		window.addEventListener("beforeunload", updateUser);
-		return () => {
-			window.removeEventListener("beforeunload", updateUser);
-			updateUser();
-		};
 	}, [state.fetch, userId]);
 
 	var renderedImages = [];
@@ -215,18 +289,45 @@ function Home() {
 	console.log(state, "state", acceptedBuddiesRef.current, "useref");
 
 	return (
-		<div>
-			<div class="container d-flex flex-row align-items-center justify-content-center">
-				<div>
-					<button onClick={addBuddy}>Add</button>
+		<div className="d-flex flex-column justify-content-center">
+			{/* {state.currentUser?.name ? (
+				<Match matchedUser={state.previousProfile} />
+			) : (
+				""
+			)} */}
+			<div className="input-group d-flex justify-content-center mt-5">
+				<div className="form-outline">
+					<input
+						type="search"
+						id="form1"
+						className="form-control"
+						placeholder="Search"
+						onChange={handleSearchChange}
+						value={state.searchValue}
+					/>
+					{/* <label className="form-label" for="form1">
+						Search
+					</label> */}
 				</div>
-				<div class="card" style={{ width: "20rem", margin: "2em 3em" }}>
-					<h5 class="card-title" style={{ margin: "1em auto" }}>
+				<button
+					type="button"
+					className="btn btn-primary"
+					onClick={handleSearchSubmit}
+				>
+					{/* <i className="fas fa-search"></i> */}
+					<FaSearch />
+				</button>
+			</div>
+			<Match matchedUser={state.previousProfile} hideModal={hideModal} />
+			<div className="container d-flex flex-row align-items-center justify-content-center">
+				<button onClick={handleLike}>Like!</button>
+				<div className="card mx-3 mx-sm-5" style={{ width: "20rem" }}>
+					<h5 className="card-title" style={{ margin: "1em auto" }}>
 						{state.currentProfile?.name}
 					</h5>
 					<div
 						id="carouselExampleIndicators"
-						class="carousel slide"
+						className="carousel slide"
 						data-ride="carousel"
 					>
 						<ol class="carousel-indicators">
@@ -245,7 +346,7 @@ function Home() {
 							></li> */}
 							{renderedIndicators}
 						</ol>
-						<div class="carousel-inner">
+						<div className="carousel-inner">
 							{/* <div class="carousel-item active">
 								<img class="d-block w-100" src={images[0]} alt="First slide" />
 							</div>
@@ -259,7 +360,7 @@ function Home() {
 						</div>
 						{state.currentProfile?.pictureUrls?.length > 0 && (
 							<a
-								class="carousel-control-prev"
+								className="carousel-control-prev"
 								href="#carouselExampleIndicators"
 								role="button"
 								data-bs-slide="prev"
@@ -273,21 +374,21 @@ function Home() {
 						)}
 						{state.currentProfile?.pictureUrls?.length > 0 && (
 							<a
-								class="carousel-control-next"
+								className="carousel-control-next"
 								href="#carouselExampleIndicators"
 								role="button"
 								data-bs-slide="next"
 							>
 								<span
-									class="carousel-control-next-icon"
+									className="carousel-control-next-icon"
 									aria-hidden="true"
 								></span>
-								<span class="sr-only">Next</span>
+								<span className="sr-only">Next</span>
 							</a>
 						)}
 					</div>
-					<div class="card-body">
-						<p class="card-text">
+					<div className="card-body">
+						<p className="card-text">
 							<span
 								style={{
 									textAlign: "start",
@@ -299,7 +400,7 @@ function Home() {
 							</span>
 							{state.currentProfile?.lookingFor}
 						</p>
-						<p class="card-text">
+						<p className="card-text">
 							<span
 								style={{
 									textAlign: "start",
@@ -311,28 +412,35 @@ function Home() {
 							</span>
 							{state.currentProfile?.description}
 						</p>
-						<ul class="list-group list-group-flush">
+						<ul className="list-group list-group-flush">
 							{state.currentProfile?.country?.length > 0 && (
-								<li class="list-group-item">
+								<li className="list-group-item">
 									Country: {state.currentProfile?.country}
 								</li>
 							)}
 							{typeof state.currentProfile?.age === "number" && (
-								<li class="list-group-item">
+								<li className="list-group-item">
 									Age: {state.currentProfile?.age}
 								</li>
 							)}
 							{state.currentProfile?.occupation?.length > 0 && (
-								<li class="list-group-item">
+								<li className="list-group-item">
 									Occupation: {state.currentProfile?.occupation}
 								</li>
 							)}
 						</ul>
 					</div>
 				</div>
-				<div>
-					<button onClick={rejectBuddy}>Next</button>
-				</div>
+
+				{/* <div
+					className="nav-link"
+					data-bs-toggle="modal"
+					data-bs-target="#exampleModal2"
+					style={{ cursor: "pointer" }}
+				>
+					OpenModal
+				</div> */}
+				<button onClick={handleReject}>Reject!</button>
 			</div>
 		</div>
 	);

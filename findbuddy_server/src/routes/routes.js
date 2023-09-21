@@ -35,8 +35,13 @@ router.post("/login", controller.login);
 router.get("/logout", controller.logout);
 router.get("/profile/:id", getUser, controller.getProfile);
 router.post("/editprofile", controller.editProfile);
-router.post("/getusers", controller.getRelevantUsers);
+// router.post("/getusers", controller.getRelevantUsers);
 router.post("/updateuserbuddies", controller.updateUserBuddies);
+router.post("/like", controller.like);
+router.post("/rejection", controller.rejection);
+router.post("/getusers", controller.getRelevantUsers);
+router.post('/getsearchedusers', controller.getSearchedUsers)
+router.delete('/deletealllikes', controller.deleteAllLikes)
 // router.post("/createchat", controller.createChat);
 // router.post('/authenticateChat', getUser, controller.authenticateChat);
 

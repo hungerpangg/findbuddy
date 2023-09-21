@@ -16,3 +16,28 @@
 .ql-editor {
 	white-space: unset !important;
 }
+
+@media only screen and (max-width: 600px) {
+	.chat-profile-link {
+		background-color: red;
+		position: absolute;
+		z-index: 10;
+		width: 15em;
+		min-height: 3.5em;
+		left: 25%;
+		opacity: 0.5;
+	}
+}
+
+@media only screen and (min-width: 768px) {
+	.chat-profile-link {
+		background-color: blue;
+		position: absolute;
+		z-index: 10;
+		width: 15em;
+		min-height: 3.5em;
+		left: 35%;
+		opacity: 0.5;
+		cursor: pointer;
+	}
+}

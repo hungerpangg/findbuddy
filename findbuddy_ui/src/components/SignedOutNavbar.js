@@ -7,7 +7,7 @@ function SignedInNavbar() {
 		<nav className="navbar navbar-expand-sm navbar-light bg-light">
 			<div className="container">
 				<Link to="/" className="navbar-brand">
-					My App
+					FindBuddy
 				</Link>
 				<div className="d-flex align-items-end justify-content-end">
 					<Signout />

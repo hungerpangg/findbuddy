@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const Like = require("../models/Like");
+const Rejection = require("../models/Rejection");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const aws = require("aws-sdk");
@@ -41,8 +43,7 @@ const createToken = (id) => {
 // handle errors
 const handleErrors = (err) => {
 	// console.log(err);
-	console.log(err.errors, "err.errors");
-	console.log(err);
+	// console.log(err.errors, "err.errors");
 	// console.log(err.message, 'message');
 	// console.log(err._message, '_message');
 	// let errors = { email: '', password: '' };
@@ -87,17 +88,19 @@ module.exports.signup_post = async (req, res) => {
 		res.cookie("jwt", token, { maxAge: maxAge * 1000 });
 		var { email, _id, name } = user;
 		const userId = _id.toString();
-		const r = await axios.put(
+		const r = await axios.post(
 			"https://api.chatengine.io/users/",
 			{
 				username: email,
 				secret: userId,
 				first_name: name,
+				email,
 			},
 			{ headers: { "private-key": "e35f6993-6750-49ff-ba12-b410cf57ac88" } }
 		);
 		res.status(201).json({ redirected: true, data: { email, userId } });
 	} catch (err) {
+		console.log(err);
 		const errors = handleErrors(err);
 		res.status(400).json({ errors });
 	}
@@ -284,21 +287,46 @@ module.exports.login = async (req, res) => {
 		res.cookie("jwt", token, { maxAge: maxAge * 1000 });
 		var { email, _id, name } = user;
 		const userId = _id.toString();
-		// const r = await axios.put(
-		// 	"https://api.chatengine.io/users/",
+		// updating a user in chatengine io, but cannot add avatar
+		// data = JSON.stringify({
+		// 	first_name: "updatedFirstName",
+		// 	last_name: "updatedLastName!",
+		// 	avatar: encodeURIComponent(user.pictureUrls[0]),
+		// });
+		// var config = {
+		// 	method: "patch",
+		// 	maxBodyLength: Infinity,
+		// 	url: "https://api.chatengine.io/users/me/",
+		// 	headers: {
+		// 		"Project-ID": "00b0b622-9275-438f-9de0-2d9dff028a21",
+		// 		"User-Name": email,
+		// 		"User-Secret": userId,
+		// 		"Content-Type": "application/json",
+		// 	},
+		// 	data: data,
+		// };
+		// const r = await axios(config)
+		// 	.then((res) => console.log(res))
+		// 	.catch((err) => console.log(err));
+		// ---
+		// const r = await axios(
+		// 	`https://api.chatengine.io/users/${email}/`,
 		// 	{
 		// 		username: email,
 		// 		secret: userId,
-		// 		first_name: name,
+		// 		last_name: "updatedLastName",
 		// 	},
-		// 	{ headers: { "private-key": "d2e2907d-c2b7-4472-bf8a-2b5f2fcb3698" } }
+		// 	{
+		// 		headers: { "private-key": "e35f6993-6750-49ff-ba12-b410cf57ac88" },
+		// 		method: "put",
+		// 	}
 		// );
 		res.status(200).json({
 			redirected: true,
 			data: { email, userId },
 		});
 	} catch (err) {
-		console.log(err);
+		console.log(err.message);
 		const errors = handleErrors(err);
 		res.status(400).json({ errors });
 	}
@@ -318,25 +346,139 @@ module.exports.updateUserBuddies = async (req, res) => {
 	}
 };
 
+// module.exports.getRelevantUsers = async (req, res) => {
+// 	const { userId } = req.body;
+// 	console.log(userId, "useId");
+// 	try {
+// 		const user = await User.findById(userId);
+// 		user.rejectedBuddies = [];
+// 		user.acceptedBuddies = [];
+// 		await user.save();
+// 		const seenBuddies = [
+// 			...user.rejectedBuddies,
+// 			...user.acceptedBuddies,
+// 			user._id.toString(),
+// 		];
+// 		console.log(seenBuddies, "Seen");
+// 		const users = await User.find({ _id: { $nin: seenBuddies } }).limit(5);
+// 		res.status(201).json(users);
+// 	} catch (err) {
+// 		console.log(err);
+// 	}
+// };
+
 module.exports.getRelevantUsers = async (req, res) => {
 	const { userId } = req.body;
-	console.log(userId, "useId");
 	try {
-		const user = await User.findById(userId);
-		// user.rejectedBuddies = [];
-		// user.acceptedBuddies = [];
-		// await user.save();
-		const seenBuddies = [
-			...user.rejectedBuddies,
-			...user.acceptedBuddies,
-			user._id.toString(),
-		];
-		console.log(seenBuddies, "Seen");
-		const users = await User.find({ _id: { $nin: seenBuddies } }).limit(5);
+		var usersLiked = await Like.find({ sender: userId }).distinct("receiver");
+		usersLiked = usersLiked.map((receiver) => {
+			return receiver.toString();
+		});
+		var usersRejected = await Rejection.find({
+			rejectingUser: userId,
+		}).distinct("rejectedUser");
+		usersRejected = usersRejected.map((rejectedUser) => {
+			return rejectedUser.toString();
+		});
+		const usersSeen = [...usersLiked, ...usersRejected, userId];
+		const usersSeenNames = await User.find({ _id: { $in: usersSeen } }).select(
+			"name"
+		);
+		console.log(usersSeenNames);
+		const users = await User.find({ _id: { $nin: usersSeen } }).limit(5);
 		res.status(201).json(users);
 	} catch (err) {
 		console.log(err);
 	}
+};
+
+module.exports.getSearchedUsers = async (req, res) => {
+	const { searchValue, userId } = req.body;
+	console.log(userId, "userId");
+	try {
+		var usersLiked = await Like.find({ sender: userId }).distinct("receiver");
+		usersLiked = usersLiked.map((receiver) => {
+			return receiver.toString();
+		});
+		var usersRejected = await Rejection.find({
+			rejectingUser: userId,
+		}).distinct("rejectedUser");
+		usersRejected = usersRejected.map((rejectedUser) => {
+			return rejectedUser.toString();
+		});
+		const usersSeen = [...usersLiked, ...usersRejected, userId];
+		const regex = new RegExp(searchValue, "i");
+		const searchedUsers = await User.find({
+			$and: [{ lookingFor: regex }, { _id: { $nin: usersSeen } }],
+		}).limit(5);
+		console.log(usersSeen, searchedUsers);
+		res.status(200).json({ ok: true, data: searchedUsers });
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+module.exports.like = async (req, res) => {
+	const { senderId, receiverId, senderEmail, receiverEmail } = req.body;
+	console.log(senderEmail, receiverEmail);
+	var mutual = false;
+	var updatedReceivedLike;
+	try {
+		const receivedLike = await Like.findOne({
+			sender: receiverId,
+			receiver: senderId,
+		});
+		if (receivedLike) {
+			mutual = true;
+			receivedLike.mutual = mutual;
+			updatedReceivedLike = await receivedLike.save();
+			var raw = {
+				usernames: [receiverEmail],
+				is_direct_chat: true,
+			};
+			var config = {
+				method: "put",
+				url: "https://api.chatengine.io/chats/",
+				headers: {
+					"Project-ID": "00b0b622-9275-438f-9de0-2d9dff028a21",
+					"User-Name": senderEmail,
+					"User-Secret": senderId,
+					"Content-Type": "application/json",
+				},
+				data: JSON.stringify(raw),
+			};
+
+			axios(config)
+				.then((response) => console.log(response))
+				.then((result) => console.log(result))
+				.catch((error) => console.log("error", error));
+		}
+		const newLike = new Like({
+			sender: senderId,
+			receiver: receiverId,
+			mutual,
+		});
+		const createdLike = await newLike.save();
+		console.log(createdLike, receivedLike, "created and received");
+		res.status(200).json({ ok: true, mutual });
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+module.exports.rejection = async (req, res) => {
+	const { senderId, receiverId } = req.body;
+	const newRejection = new Rejection({
+		rejectingUser: senderId,
+		rejectedUser: receiverId,
+	});
+	const createdRejection = await newRejection.save();
+	res.status(200).json({ ok: true, data: createdRejection });
+};
+
+module.exports.deleteAllLikes = async (req, res) => {
+	const deleteLikes = await Like.deleteMany({});
+	console.log(deleteLikes, "deleteLikes");
 };
 
 // module.exports.createChat=(req, res)=>{

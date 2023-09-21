@@ -50,9 +50,7 @@ function Signup() {
 				const { email, userId } = data.data;
 				setAuthenticatedState((prevState) => ({
 					...prevState,
-					isAuthenticated: true,
-					email,
-					secret: userId,
+					userId,
 				}));
 			}
 			console.log(data.redirected, "res.redirected");

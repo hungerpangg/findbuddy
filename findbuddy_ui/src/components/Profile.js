@@ -63,7 +63,7 @@ function Profile() {
 
 	useEffect(() => {
 		getProfile();
-	}, []);
+	}, [id]);
 
 	const handleEditSubmit = async (e) => {
 		e.preventDefault();
@@ -224,7 +224,9 @@ function Profile() {
 	return (
 		<div>
 			<div className="d-flex justify-content-end mr-5 mt-4">
-				<button onClick={handleEditButtonClick}>Edit</button>
+				{!id.includes("@") && (
+					<button onClick={handleEditButtonClick}>Edit</button>
+				)}
 			</div>
 			{isEditMode ? (
 				// Render the edit form when in edit mode
@@ -388,8 +390,8 @@ function Profile() {
 					<h2 className="d-flex justify-content-center">
 						{state.formDetails.name}
 					</h2>
-					<div className="row g-2">
-						<div className="col-sm-4">
+					<div className="row g-2 ml-3 mr-3">
+						<div className="col-sm-4 m-3">
 							<h5>Looking for</h5>
 							{state.formDetails.lookingFor}
 						</div>
@@ -400,7 +402,7 @@ function Profile() {
 							/> */}
 							<ImageGallery items={images} />
 						</div>
-						<div className="col-sm-4 d-flex align-items-center">
+						<div className="col-sm-4 d-flex align-items-center m-3">
 							<ul className="list-unstyled">
 								<li>
 									<span>Country: {state.formDetails.country}</span>
@@ -419,7 +421,9 @@ function Profile() {
 					</div>
 					<hr />
 					<h3 className="d-flex justify-content-center m-5">About me</h3>
-					<div className="text-center">{state.formDetails.description}</div>
+					<div className="text-center mb-5 ml-3 mr-3	">
+						{state.formDetails.description}
+					</div>
 				</div>
 			)}
 		</div>

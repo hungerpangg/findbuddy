@@ -1,54 +1,66 @@
 import { Link, NavLink } from "react-router-dom";
-import { useState, useContext, useEffect } from "react";
+import { useRef, useContext, useEffect, useState } from "react";
 import Signout from "./Signout";
 import AuthenticateContext from "../context/authenticate";
+import * as bootstrap from "bootstrap";
+// window.bootstrap = bootstrap;
 
 function SignedInNavbar() {
 	const {
 		authenticatedState: { userId },
 	} = useContext(AuthenticateContext);
 
-	// useEffect(() => {
-	// 	fetch("http://localhost:4000/authenticateChat", {
-	// 		method: "POST",
-	// 		body: JSON.stringify({ userId }),
-	// 		headers: { "Content-Type": "application/json" },
-	// 	})
-	// 		.then((res) => {
-	// 			return res.json();
-	// 		})
-	// 		.then((data) => {
-	// 			const { username, secret } = data.data;
-	// 			setAuthenticatedState((prevState) => {
-	// 				return {
-	// 					...prevState,
-	// 					secret,
-	// 				};
-	// 			});
-	// 		})
-	// 		.catch((err) => console.log(err));
-	// }, []);
+	const dropdownRef = useRef(null);
+
+	useEffect(() => {
+		const dropdownToggle = dropdownRef.current;
+
+		if (dropdownToggle) {
+			// Create a Bootstrap Dropdown instance
+			const dropdown = new bootstrap.Dropdown(dropdownToggle);
+
+			console.log(dropdownToggle);
+
+			const handleShow = () => {
+				if (dropdownToggle.ariaExpanded === "false") {
+					dropdown.show();
+					dropdownToggle.ariaExpanded = "true";
+				} else {
+					dropdown.hide();
+					dropdownToggle.ariaExpanded = "false";
+				}
+			};
+
+			// Function to handle clicks outside the dropdown
+			const handleOutsideClick = (event) => {
+				if (!dropdownToggle.contains(event.target)) {
+					// If the click is outside the dropdown, close it
+					dropdown.hide();
+					dropdownToggle.ariaExpanded = "false";
+				}
+			};
+
+			// Add a click event listener to the document
+			dropdownToggle.addEventListener("click", handleShow);
+			document.addEventListener("click", handleOutsideClick);
+
+			// Cleanup function: Remove the event listener when the component unmounts
+			return () => {
+				document.removeEventListener("click", handleOutsideClick);
+				document.removeEventListener("click", handleShow);
+			};
+		}
+	}, [userId]);
 
 	return (
 		<nav className="navbar navbar-expand-sm navbar-light bg-light">
 			<div className="container">
 				<Link to="/home" className="navbar-brand">
-					My App
+					FindBuddy
 				</Link>
 				<div className="d-flex align-items-end justify-content-end">
 					<Signout />
-					{/* <button
-						className="navbar-toggler"
-						type="button"
-						data-bs-toggle="collapse"
-						data-bs-target="#navbarNav"
-						aria-controls="navbarNav"
-						aria-expanded="false"
-						aria-label="Toggle navigation"
-					>
-						<span className="navbar-toggler-icon" />
-					</button> */}
-					{/* <div className="d-flex align-items-end justify-content-end"> */}
+
 					<div className="navbar-links mr-4" id="navbarNav">
 						<ul
 							className="navbar-nav ml-auto d-flex flex-row"
@@ -59,15 +71,16 @@ function SignedInNavbar() {
 									Chats
 								</NavLink>
 							</li>
-							<li className="nav-item">
+							{/* <li className="nav-item">
 								<NavLink to="/friends" className="nav-link">
 									Friends
 								</NavLink>
-							</li>
+							</li> */}
 						</ul>
 					</div>
 					<div className="dropdown position-relative ml-auto">
 						<button
+							ref={dropdownRef}
 							class="btn btn-secondary dropdown-toggle"
 							type="button"
 							id="dropdownMenuButton"
