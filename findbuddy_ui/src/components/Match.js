@@ -36,7 +36,10 @@ function Match({ matchedUser, hideModal }) {
 							</button>
 						</div>
 						<div className="modal-body">
-							<img src={matchedUser?.pictureUrls?.[0]}></img>
+							<img
+								src={matchedUser?.pictureUrls?.[0]}
+								style={{ width: "300px", height: "300px" }}
+							></img>
 							<p>
 								<a
 									onClick={() => {
