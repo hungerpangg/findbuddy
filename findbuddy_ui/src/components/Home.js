@@ -2,6 +2,7 @@ import { useState, useEffect, useContext, useRef } from "react";
 import AuthenticateContext from "../context/authenticate";
 import Match from "./Match";
 import { FaSearch } from "react-icons/fa";
+import { GoCircleSlash } from "react-icons/go";
 import * as bootstrap from "bootstrap";
 // window.bootstrap = bootstrap;
 
@@ -36,6 +37,8 @@ function Home() {
 	acceptedBuddiesRef.current = state.acceptedBuddies;
 	const rejectedBuddiesRef = useRef();
 	rejectedBuddiesRef.current = state.rejectedBuddies;
+	const currentSearchedValue = useRef();
+	if (!currentSearchedValue.current) currentSearchedValue.current = "";
 
 	const handleNextProfileAction = () => {
 		// handle frontend
@@ -212,25 +215,36 @@ function Home() {
 		}));
 	};
 
-	const handleSearchSubmit = async () => {
-		try {
-			const res = await fetch(`http://localhost:4000/getsearchedusers`, {
-				method: "POST",
-				body: JSON.stringify({ searchValue: state.searchValue, userId }),
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-			});
-			const { data } = await res.json();
-			// console.log(data);
-			setState((prevState) => ({
-				...prevState,
-				listOfProfiles: data,
-				currentProfile: data[0],
-				fetch: false,
-			}));
-		} catch (err) {
-			console.log(err);
-		}
+	const handleSearchSubmit = async (event) => {
+		if (event.key === "Enter" || event.type === "click")
+			try {
+				const res = await fetch(`http://localhost:4000/getsearchedusers`, {
+					method: "POST",
+					body: JSON.stringify({ searchValue: state.searchValue, userId }),
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+				});
+				const { data } = await res.json();
+				// console.log(data);
+				currentSearchedValue.current = state.searchValue;
+				setState((prevState) => ({
+					...prevState,
+					listOfProfiles: data,
+					currentProfile: data[0],
+					fetch: false,
+				}));
+			} catch (err) {
+				console.log(err);
+			}
+	};
+
+	const handleClearFilter = () => {
+		currentSearchedValue.current = "";
+		setState((prevState) => ({
+			...prevState,
+			searchValue: "",
+			fetch: true,
+		}));
 	};
 
 	useEffect(() => {
@@ -302,6 +316,7 @@ function Home() {
 						id="form1"
 						className="form-control"
 						placeholder="Search"
+						onKeyUp={handleSearchSubmit}
 						onChange={handleSearchChange}
 						value={state.searchValue}
 					/>
@@ -317,10 +332,25 @@ function Home() {
 					{/* <i className="fas fa-search"></i> */}
 					<FaSearch />
 				</button>
+				<button
+					type="button"
+					className="btn btn-secondary"
+					onClick={handleClearFilter}
+				>
+					<GoCircleSlash />
+				</button>
+			</div>
+			<div style={{ margin: "1em auto 0 auto" }}>
+				{console.log(currentSearchedValue)}
+				{currentSearchedValue.current.length > 0 &&
+					`Currently searching for: ${currentSearchedValue.current}`}
 			</div>
 			<Match matchedUser={state.previousProfile} hideModal={hideModal} />
 			<div className="container d-flex flex-row align-items-center justify-content-center">
-				<button onClick={handleLike}>Like!</button>
+				{/* <button onClick={handleLike}>Like!</button> */}
+				<button onClick={handleReject} className="btn btn-warning">
+					Pass!
+				</button>
 				<div className="card mx-3 mx-sm-5" style={{ width: "20rem" }}>
 					<h5 className="card-title" style={{ margin: "1em auto" }}>
 						{state.currentProfile?.name}
@@ -440,7 +470,10 @@ function Home() {
 				>
 					OpenModal
 				</div> */}
-				<button onClick={handleReject}>Reject!</button>
+				{/* <button onClick={handleReject}>Reject!</button> */}
+				<button onClick={handleLike} className="btn btn-success">
+					Like!
+				</button>
 			</div>
 		</div>
 	);

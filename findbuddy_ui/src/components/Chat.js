@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthenticateContext from "../context/authenticate";
-import { ChatEngine, ChatHeader, ChatSettingsTop } from "react-chat-engine";
+import { ChatEngine, ChatSettingsTop } from "react-chat-engine";
 
 function Chat() {
 	const navigate = useNavigate();
@@ -27,12 +27,12 @@ function Chat() {
 	console.log(currentUser, "currentUser");
 
 	const handleChatSettingsTopClick = (chat) => {
-		console.log(chat);
+		console.log(chat, "chatwhynot");
 		const { people } = chat;
 		const target = people?.filter((each) => {
 			return each.person.username !== currentUser.username;
 		});
-		const targetEmail = target[0].person.username;
+		const targetEmail = target?.[0].person.username;
 		console.log(targetEmail, "targetemail");
 		navigate(`/profile/${targetEmail}`);
 	};
@@ -54,24 +54,26 @@ function Chat() {
 			{currentUser.username.length > 0 && (
 				<ChatEngine
 					projectID="
-                00b0b622-9275-438f-9de0-2d9dff028a21"
+					30e927c4-1991-45d2-907f-fbd658777b8f"
 					userName={currentUser.username}
 					userSecret={currentUser.secret}
 					// Customize UI
 					renderPeopleSettings={(creds, chat) => ""}
 					renderPhotosSettings={(chat) => ""}
 					renderNewChatForm={(creds) => ""}
-					renderChatSettingsTop={(creds, chat) => (
-						<div
-							// ref={currentChat}
-							// chatValue={JSON.stringify(chat)}
-							style={{ cursor: "pointer" }}
-							onClick={() => handleChatSettingsTopClick(chat)}
-						>
-							{console.log(chat)}
-							<ChatSettingsTop />
-						</div>
-					)}
+					renderChatSettingsTop={(creds, chat) => {
+						return (
+							<div
+								// ref={currentChat}
+								// chatValue={JSON.stringify(chat)}
+								style={{ cursor: "pointer" }}
+								onClick={() => handleChatSettingsTopClick(chat)}
+							>
+								{/* {console.log(chat)} */}
+								<ChatSettingsTop />
+							</div>
+						);
+					}}
 				></ChatEngine>
 			)}
 		</div>

@@ -225,7 +225,9 @@ function Profile() {
 		<div>
 			<div className="d-flex justify-content-end mr-5 mt-4">
 				{!id.includes("@") && (
-					<button onClick={handleEditButtonClick}>Edit</button>
+					<button onClick={handleEditButtonClick} className="btn btn-secondary">
+						Edit
+					</button>
 				)}
 			</div>
 			{isEditMode ? (

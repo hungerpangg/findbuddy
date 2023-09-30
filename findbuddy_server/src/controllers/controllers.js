@@ -96,7 +96,7 @@ module.exports.signup_post = async (req, res) => {
 				first_name: name,
 				email,
 			},
-			{ headers: { "private-key": "e35f6993-6750-49ff-ba12-b410cf57ac88" } }
+			{ headers: { "private-key": process.env.CHATENGINE_PRIVATE_KEY } }
 		);
 		res.status(201).json({ redirected: true, data: { email, userId } });
 	} catch (err) {
@@ -239,7 +239,7 @@ module.exports.editProfile = (req, res) => {
 						lookingFor,
 						description,
 						occupation,
-						age: parseInt(age),
+						age: age.length > 0 ? parseInt(age) : 0
 					};
 					// console.log(decodedToken.id, "decoded");
 					try {
@@ -267,7 +267,7 @@ module.exports.editProfile = (req, res) => {
 						}
 						res.status(201).json({ ok: true, redirected: true });
 					} catch (err) {
-						console.log(result, err);
+						console.log(err);
 					}
 				}
 			});
@@ -440,7 +440,7 @@ module.exports.like = async (req, res) => {
 				method: "put",
 				url: "https://api.chatengine.io/chats/",
 				headers: {
-					"Project-ID": "00b0b622-9275-438f-9de0-2d9dff028a21",
+					"Project-ID": process.env.CHATENGINE_PROJECT_ID,
 					"User-Name": senderEmail,
 					"User-Secret": senderId,
 					"Content-Type": "application/json",

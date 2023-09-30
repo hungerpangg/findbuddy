@@ -37,7 +37,11 @@ function Match({ matchedUser, hideModal }) {
 						</div>
 						<div className="modal-body">
 							<img
-								src={matchedUser?.pictureUrls?.[0]}
+								src={
+									matchedUser.pictureUrls?.length > 0
+										? matchedUser.pictureUrls?.[0]
+										: "https://findbuddy-pictures.s3.ap-southeast-1.amazonaws.com/no-profile-picture.jpeg"
+								}
 								style={{ width: "300px", height: "300px" }}
 							></img>
 							<p>
