@@ -35,10 +35,6 @@ function Profile() {
 				credentials: "include",
 			});
 			const data = await res.json();
-			console.log(data);
-			// if (data.error) {
-			// 	navigate("/signup");
-			// }
 			setState((prevState) => {
 				return {
 					...prevState,
@@ -84,7 +80,7 @@ function Profile() {
 				credentials: "include",
 			});
 			const data = await res.json();
-			console.log(data, "successful save");
+
 			if (data.ok) {
 				setIsEditMode(false);
 			}
@@ -104,8 +100,6 @@ function Profile() {
 	};
 
 	const handleFileChange = (e) => {
-		// setSelectedFiles([...selectedFiles, ...e.target.files]);
-		// console.log(e.target.files[0].name);
 		setState((prevData) => {
 			return {
 				...prevData,
@@ -126,9 +120,9 @@ function Profile() {
 
 	const removePicture = (e) => {
 		e.preventDefault();
-		console.dir(e.target.previousSibling.textContent);
+
 		const originalName = e.target.previousSibling.textContent;
-		console.log(originalName, "originalName");
+
 		const obj = state.selectedFiles.filter((obj) => {
 			return obj["originalName"] === originalName;
 		});
@@ -211,13 +205,6 @@ function Profile() {
 		}
 	};
 
-	const handleSaveButtonClick = () => {
-		// Save the edited profile data and switch back to view mode
-		setIsEditMode(false);
-		// You can make API requests here to save the data on the server if needed.
-	};
-
-	console.log(state, "stateObject");
 	const isNameValid = "";
 	const isCountryValid = "";
 
@@ -233,17 +220,12 @@ function Profile() {
 			{isEditMode ? (
 				// Render the edit form when in edit mode
 				<div className="container w-50 mt-5">
-					{/* <p className="text-justify text-center">
-						Include more details for people to search for you if they have
-						similar interests!
-					</p> */}
 					<h2 className="d-flex justify-content-center">Edit Profile</h2>
 					<form
 						className="needs-validation"
 						onSubmit={handleEditSubmit}
 						encType="multipart/form-data"
 					>
-						{/* <h5>Description</h5> */}
 						<div className="form-row mt-3">
 							<div className="col-md-12 mb-3">
 								<label
@@ -261,13 +243,7 @@ function Profile() {
 									placeholder={state.formDetails.lookingFor}
 									// required
 								></textarea>
-								{/* <p>
-									You may write your interests, what you're looking for,
-									acitivities you attend... It can be anything! Just note that
-									the words here will be what comes up in other buddy's search
-									results. If you put "tennis" here, another buddy will see your
-									profile if they are searching for tennis buddies.
-								</p> */}
+
 								<div className="invalid-feedback">
 									Please enter a message in the textarea.
 								</div>
@@ -288,11 +264,7 @@ function Profile() {
 									placeholder={state.formDetails.description}
 									// required
 								></textarea>
-								{/* <p>
-									You may write a description about yourself, your personality,
-									what kind of buddy personalities are you looking for, it can
-									be anything you want to include!
-								</p> */}
+
 								<div className="invalid-feedback">
 									Please enter a message in the textarea.
 								</div>
@@ -310,9 +282,6 @@ function Profile() {
 									placeholder={state.formDetails.occupation}
 									className={`form-control ${isNameValid}`}
 								/>
-								{/* <div className="invalid-feedback">
-									{state.validateDetails.name}
-								</div> */}
 							</div>
 							<div className="form-group col-md-6">
 								<label htmlFor="country" className="font-weight-bold">
@@ -327,9 +296,6 @@ function Profile() {
 									placeholder={state.formDetails.age}
 									className={`form-control ${isCountryValid}`}
 								/>
-								{/* <div className="invalid-feedback">
-									{state.validateDetails.country}
-								</div> */}
 							</div>
 							<div className="form-group col-md-6">
 								<label htmlFor="pictures" className="font-weight-bold">
@@ -341,9 +307,7 @@ function Profile() {
 									className={`form-control ${isCountryValid}`}
 									id="pictures"
 								/>
-								{/* <div className="invalid-feedback">
-									{state.validateDetails.country}
-								</div> */}
+
 								<ul className="list-group">
 									{state.selectedFiles.length > 0
 										? state.selectedFiles.map((file, index) => {
@@ -372,21 +336,6 @@ function Profile() {
 					</form>
 				</div>
 			) : (
-				// <div>
-				// 	<label>
-				// 		Name:
-				// 		<input type="text" />
-				// 	</label>
-				// 	<label>
-				// 		Email:
-				// 		<input type="text" />
-				// 	</label>
-				// 	<label>
-				// 		Bio:
-				// 		<textarea type="text" />
-				// 	</label>
-				// 	<button onClick={handleSaveButtonClick}>Save</button>
-				// </div>
 				// Render the view mode when not in edit mode
 				<div className="container px-0">
 					<h2 className="d-flex justify-content-center">
@@ -398,10 +347,6 @@ function Profile() {
 							{state.formDetails.lookingFor}
 						</div>
 						<div className="col-sm-4 d-flex align-items-center justify-content-center">
-							{/* <img
-								src="/stock1.jpeg"
-								className="img-fluid rounded-circle round-img"
-							/> */}
 							<ImageGallery items={images} />
 						</div>
 						<div className="col-sm-4 d-flex align-items-center m-3">
@@ -416,9 +361,6 @@ function Profile() {
 									<span>Age: {state.formDetails.age}</span>
 								</li>
 							</ul>
-							{/* <span>Country: Singapore</span>
-							<span>Occupation: Engineer</span>
-							<span>Age: 15</span> */}
 						</div>
 					</div>
 					<hr />

@@ -27,7 +27,6 @@ function Chat() {
 	console.log(currentUser, "currentUser");
 
 	const handleChatSettingsTopClick = (chat) => {
-		console.log(chat, "chatwhynot");
 		const { people } = chat;
 		const target = people?.filter((each) => {
 			return each.person.username !== currentUser.username;
@@ -39,18 +38,6 @@ function Chat() {
 
 	return (
 		<div>
-			{/* <div
-				className="chat-profile-link"
-				onClick={async () => {
-					const data = await JSON.parse(
-						currentChat.current.getAttribute("chatValue")
-					);
-					console.log(data, "chatValue");
-					handleChatSettingsTopClick(data);
-				}}
-			>
-				Click to go to profile
-			</div> */}
 			{currentUser.username.length > 0 && (
 				<ChatEngine
 					projectID="
@@ -64,12 +51,9 @@ function Chat() {
 					renderChatSettingsTop={(creds, chat) => {
 						return (
 							<div
-								// ref={currentChat}
-								// chatValue={JSON.stringify(chat)}
 								style={{ cursor: "pointer" }}
 								onClick={() => handleChatSettingsTopClick(chat)}
 							>
-								{/* {console.log(chat)} */}
 								<ChatSettingsTop />
 							</div>
 						);

@@ -53,8 +53,7 @@ function Signup() {
 					userId,
 				}));
 			}
-			console.log(data.redirected, "res.redirected");
-			console.log(data);
+
 			if (data.errors) {
 				let errors = data.errors;
 				let newError = { email: "", password: "", name: "", country: "" };
@@ -67,27 +66,6 @@ function Signup() {
 					},
 					submitted: true,
 				}));
-			}
-			if (data.user) {
-				console.log(data.user, "success!");
-				function getCookie(name) {
-					const cookies = document.cookie.split(";");
-					for (const cookie of cookies) {
-						const [cookieName, cookieValue] = cookie.split("=");
-						if (cookieName.trim() === name) {
-							return decodeURIComponent(cookieValue);
-						}
-					}
-					return null;
-				}
-
-				// Example: Reading a cookie with the name "myCookie"
-				const myCookieValue = getCookie("myCookie");
-				if (myCookieValue) {
-					console.log('Value of "myCookie":', myCookieValue);
-				} else {
-					console.log('Cookie "myCookie" not found or empty.');
-				}
 			}
 		} catch (err) {
 			console.log(err);

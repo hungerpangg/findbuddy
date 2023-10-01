@@ -7,8 +7,6 @@ function Match({ matchedUser, hideModal }) {
 	const navigate = useNavigate();
 	const { setAuthenticatedState } = useContext(AuthenticateContext);
 
-	console.log(matchedUser, "matchedUser");
-
 	return (
 		<div>
 			<div
@@ -29,7 +27,6 @@ function Match({ matchedUser, hideModal }) {
 								type="button"
 								className="close"
 								data-bs-dismiss="modal"
-								// onClick={() => hideModal()}
 								aria-label="Close"
 							>
 								<span aria-hidden="true">&times;</span>
@@ -47,7 +44,7 @@ function Match({ matchedUser, hideModal }) {
 							<p>
 								<a
 									onClick={() => {
-										navigate(`/profile/${matchedUser._id}`);
+										navigate(`/profile/${matchedUser.email}`);
 										hideModal();
 									}}
 									role="button"

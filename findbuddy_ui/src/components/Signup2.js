@@ -50,23 +50,6 @@ function Signup() {
 			if (data.redirected) {
 				navigate(`/profile/${data.id}`);
 			}
-			console.log(data, "data signup2");
-			// if (data.errors) {
-			// 	let errors = data.errors;
-			// 	let newError = { email: "", password: "", name: "", country: "" };
-			// 	errors = Object.assign(newError, errors);
-			// 	setState((prevData) => ({
-			// 		...prevData,
-			// 		validateDetails: {
-			// 			...prevData.validateDetails,
-			// 			...errors,
-			// 		},
-			// 		submitted: true,
-			// 	}));
-			// }
-			// if (data.user) {
-			// 	console.log(data.user, "success!");
-			// }
 		} catch (err) {
 			console.log(err);
 		}
@@ -90,8 +73,6 @@ function Signup() {
 			? "is-invalid"
 			: "";
 
-	console.log(state, isNameValid);
-
 	return (
 		<div className="container w-50 mt-5">
 			<p className="text-justify text-center">
@@ -103,7 +84,6 @@ function Signup() {
 				onSubmit={handleSubmit}
 				encType="multipart/form-data"
 			>
-				{/* <h5>Description</h5> */}
 				<div className="form-row mt-3">
 					<div className="col-md-12 mb-3">
 						<label

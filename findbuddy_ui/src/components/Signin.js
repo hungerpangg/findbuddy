@@ -45,10 +45,8 @@ function Signin() {
 				const { email, userId } = data.data;
 				setAuthenticatedState((prevState) => ({
 					...prevState,
-					// isAuthenticated: true,
+
 					userId,
-					// secret: userId,
-					// email,
 				}));
 			}
 			if (data.errors) {

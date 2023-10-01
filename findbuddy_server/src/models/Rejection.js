@@ -15,7 +15,6 @@ const rejectionSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 	},
-	// Add other fields as needed
 });
 
 const Rejection = mongoose.model("rejection", rejectionSchema);

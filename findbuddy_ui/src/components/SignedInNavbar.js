@@ -3,7 +3,6 @@ import { useRef, useContext, useEffect, useState } from "react";
 import Signout from "./Signout";
 import AuthenticateContext from "../context/authenticate";
 import * as bootstrap from "bootstrap";
-// window.bootstrap = bootstrap;
 
 function SignedInNavbar() {
 	const {
@@ -40,11 +39,9 @@ function SignedInNavbar() {
 				}
 			};
 
-			// Add a click event listener to the document
 			dropdownToggle.addEventListener("click", handleShow);
 			document.addEventListener("click", handleOutsideClick);
 
-			// Cleanup function: Remove the event listener when the component unmounts
 			return () => {
 				document.removeEventListener("click", handleOutsideClick);
 				document.removeEventListener("click", handleShow);
@@ -71,11 +68,6 @@ function SignedInNavbar() {
 									Chats
 								</NavLink>
 							</li>
-							{/* <li className="nav-item">
-								<NavLink to="/friends" className="nav-link">
-									Friends
-								</NavLink>
-							</li> */}
 						</ul>
 					</div>
 					<div className="dropdown position-relative ml-auto">
@@ -101,13 +93,10 @@ function SignedInNavbar() {
 						</button>
 
 						<div class="dropdown-menu dropdown-menu-right">
-							<ul
-								className="container navbar-nav ml-auto d-flex flex-column pl-3"
-								// style={{ display: "flex", "flex-direction": "column" }}
-							>
+							<ul className="container navbar-nav ml-auto d-flex flex-column pl-3">
 								<li className="nav-item">
 									<NavLink to={`/profile/${userId}`} className="nav-link">
-										Profile
+										My profile
 									</NavLink>
 								</li>
 								<li>
