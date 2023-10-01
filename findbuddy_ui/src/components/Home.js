@@ -18,6 +18,7 @@ function Home() {
 		currentProfile: {},
 		listOfProfiles: [],
 		fetch: false,
+		searchFetch: false,
 	});
 
 	const handleModal = () => {
@@ -42,7 +43,7 @@ function Home() {
 	const handleNextProfileAction = () => {
 		// handle frontend
 		var fetchState = false;
-		if (state.listOfProfiles.length <= 1) {
+		if (state.listOfProfiles.length <= 1 && state.searchFetch === false) {
 			fetchState = true;
 		}
 		var newList = state.listOfProfiles;
@@ -111,6 +112,7 @@ function Home() {
 				listOfProfiles: data,
 				currentProfile: data[0],
 				fetch: false,
+				searchFetch: false,
 			}));
 		} catch (err) {
 			console.log(err);
@@ -140,6 +142,7 @@ function Home() {
 					listOfProfiles: data,
 					currentProfile: data[0],
 					fetch: false,
+					searchFetch: true,
 				}));
 			} catch (err) {
 				console.log(err);
@@ -151,6 +154,7 @@ function Home() {
 		setState((prevState) => ({
 			...prevState,
 			searchValue: "",
+			searchFetch: false,
 			fetch: true,
 		}));
 	};
@@ -220,99 +224,109 @@ function Home() {
 					`Currently searching for: ${currentSearchedValue.current}`}
 			</div>
 			<Match matchedUser={state.previousProfile} hideModal={hideModal} />
-			<div className="container d-flex flex-row align-items-center justify-content-center">
-				<button onClick={handleReject} className="btn btn-warning">
-					Pass!
-				</button>
-				<div className="card mx-3 mx-sm-5" style={{ width: "20rem" }}>
-					<h5 className="card-title" style={{ margin: "1em auto" }}>
-						{state.currentProfile?.name}
-					</h5>
-					<div
-						id="carouselExampleIndicators"
-						className="carousel slide"
-						data-ride="carousel"
-					>
-						<ol class="carousel-indicators">{renderedIndicators}</ol>
-						<div className="carousel-inner">{renderedImages}</div>
-						{state.currentProfile?.pictureUrls?.length > 0 && (
-							<a
-								className="carousel-control-prev"
-								href="#carouselExampleIndicators"
-								role="button"
-								data-bs-slide="prev"
-							>
+			{state.listOfProfiles.length > 0 ? (
+				<div className="container d-flex flex-row align-items-center justify-content-center">
+					<button onClick={handleReject} className="btn btn-warning">
+						Pass!
+					</button>
+					<div className="card mx-3 mx-sm-5" style={{ width: "20rem" }}>
+						<h5 className="card-title" style={{ margin: "1em auto" }}>
+							{state.currentProfile?.name}
+						</h5>
+						<div
+							id="carouselExampleIndicators"
+							className="carousel slide"
+							data-ride="carousel"
+						>
+							<ol class="carousel-indicators">{renderedIndicators}</ol>
+							<div className="carousel-inner">{renderedImages}</div>
+							{state.currentProfile?.pictureUrls?.length > 0 && (
+								<a
+									className="carousel-control-prev"
+									href="#carouselExampleIndicators"
+									role="button"
+									data-bs-slide="prev"
+								>
+									<span
+										class="carousel-control-prev-icon"
+										aria-hidden="true"
+									></span>
+									<span class="sr-only">Previous</span>
+								</a>
+							)}
+							{state.currentProfile?.pictureUrls?.length > 0 && (
+								<a
+									className="carousel-control-next"
+									href="#carouselExampleIndicators"
+									role="button"
+									data-bs-slide="next"
+								>
+									<span
+										className="carousel-control-next-icon"
+										aria-hidden="true"
+									></span>
+									<span className="sr-only">Next</span>
+								</a>
+							)}
+						</div>
+						<div className="card-body">
+							<p className="card-text">
 								<span
-									class="carousel-control-prev-icon"
-									aria-hidden="true"
-								></span>
-								<span class="sr-only">Previous</span>
-							</a>
-						)}
-						{state.currentProfile?.pictureUrls?.length > 0 && (
-							<a
-								className="carousel-control-next"
-								href="#carouselExampleIndicators"
-								role="button"
-								data-bs-slide="next"
-							>
+									style={{
+										textAlign: "start",
+										fontWeight: "bold",
+										display: "block",
+									}}
+								>
+									Looking for
+								</span>
+								{state.currentProfile?.lookingFor}
+							</p>
+							<p className="card-text">
 								<span
-									className="carousel-control-next-icon"
-									aria-hidden="true"
-								></span>
-								<span className="sr-only">Next</span>
-							</a>
-						)}
+									style={{
+										textAlign: "start",
+										fontWeight: "bold",
+										display: "block",
+									}}
+								>
+									Description
+								</span>
+								{state.currentProfile?.description}
+							</p>
+							<ul className="list-group list-group-flush">
+								{state.currentProfile?.country?.length > 0 && (
+									<li className="list-group-item">
+										Country: {state.currentProfile?.country}
+									</li>
+								)}
+								{typeof state.currentProfile?.age === "number" && (
+									<li className="list-group-item">
+										Age: {state.currentProfile?.age}
+									</li>
+								)}
+								{state.currentProfile?.occupation?.length > 0 && (
+									<li className="list-group-item">
+										Occupation: {state.currentProfile?.occupation}
+									</li>
+								)}
+							</ul>
+						</div>
 					</div>
-					<div className="card-body">
-						<p className="card-text">
-							<span
-								style={{
-									textAlign: "start",
-									fontWeight: "bold",
-									display: "block",
-								}}
-							>
-								Looking for
-							</span>
-							{state.currentProfile?.lookingFor}
-						</p>
-						<p className="card-text">
-							<span
-								style={{
-									textAlign: "start",
-									fontWeight: "bold",
-									display: "block",
-								}}
-							>
-								Description
-							</span>
-							{state.currentProfile?.description}
-						</p>
-						<ul className="list-group list-group-flush">
-							{state.currentProfile?.country?.length > 0 && (
-								<li className="list-group-item">
-									Country: {state.currentProfile?.country}
-								</li>
-							)}
-							{typeof state.currentProfile?.age === "number" && (
-								<li className="list-group-item">
-									Age: {state.currentProfile?.age}
-								</li>
-							)}
-							{state.currentProfile?.occupation?.length > 0 && (
-								<li className="list-group-item">
-									Occupation: {state.currentProfile?.occupation}
-								</li>
-							)}
-						</ul>
-					</div>
-				</div>
 
-				<button onClick={handleLike} className="btn btn-success">
-					Like!
-				</button>
-			</div>
+					<button onClick={handleLike} className="btn btn-success">
+						Like!
+					</button>
+				</div>
+			) : state.searchFetch ? (
+				<h5 style={{ margin: "5em auto" }}>
+					No more users available under current search filter
+				</h5>
+			) : (
+				<h5 style={{ margin: "5em auto" }}>
+					You've ran out of users available in your area, you may refresh later
+				</h5>
+			)}
 		</div>
 	);
 }

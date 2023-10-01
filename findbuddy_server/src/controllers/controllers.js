@@ -280,7 +280,10 @@ module.exports.login = async (req, res) => {
 
 module.exports.getRelevantUsers = async (req, res) => {
 	const { userId } = req.body;
-	if (userId === "") return;
+	if (userId === "") {
+		res.json([]);
+		return;
+	}
 	try {
 		var usersLiked = await Like.find({ sender: userId }).distinct("receiver");
 		usersLiked = usersLiked.map((receiver) => {
@@ -293,7 +296,6 @@ module.exports.getRelevantUsers = async (req, res) => {
 			return rejectedUser.toString();
 		});
 		const usersSeen = [...usersLiked, ...usersRejected, userId];
-
 		const users = await User.find({ _id: { $nin: usersSeen } }).limit(5);
 		res.status(201).json(users);
 	} catch (err) {
