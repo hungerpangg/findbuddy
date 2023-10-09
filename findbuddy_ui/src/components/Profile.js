@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import ImageGallery from "react-image-gallery";
 import { useNavigate, useParams } from "react-router-dom";
+import AuthenticateContext from "../context/authenticate";
 
 function Profile() {
 	const navigate = useNavigate();
 	const { id } = useParams();
+	const {
+		authenticatedState: { userId },
+	} = useContext(AuthenticateContext);
 	const [isEditMode, setIsEditMode] = useState(false);
 	const [state, setState] = useState({
 		formDetails: {
@@ -35,23 +39,27 @@ function Profile() {
 				credentials: "include",
 			});
 			const data = await res.json();
-			setState((prevState) => {
-				return {
-					...prevState,
-					formDetails: {
-						name: data.name,
-						description: data.description,
-						lookingFor: data.lookingFor,
-						occupation: data.occupation,
-						age: data.age,
-						pictureUrls: data.pictureUrls,
-						country: data.country,
-					},
-					updateDetails: {
-						...prevState.updateDetails,
-					},
-				};
-			});
+			if (data.ok) {
+				setState((prevState) => {
+					return {
+						...prevState,
+						formDetails: {
+							name: data.name,
+							description: data.description,
+							lookingFor: data.lookingFor,
+							occupation: data.occupation,
+							age: data.age,
+							pictureUrls: data.pictureUrls,
+							country: data.country,
+						},
+						updateDetails: {
+							...prevState.updateDetails,
+						},
+					};
+				});
+			} else {
+				navigate("/not-found");
+			}
 		} catch (err) {
 			console.log(err);
 		}
@@ -211,7 +219,7 @@ function Profile() {
 	return (
 		<div>
 			<div className="d-flex justify-content-end mr-5 mt-4">
-				{!id.includes("@") && (
+				{!id.includes("@") && id === userId && (
 					<button onClick={handleEditButtonClick} className="btn btn-secondary">
 						Edit
 					</button>

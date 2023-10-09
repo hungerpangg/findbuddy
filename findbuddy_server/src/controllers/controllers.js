@@ -148,7 +148,27 @@ module.exports.signup2_post = async (req, res) => {
 	});
 };
 
-module.exports.getProfile = (req, res) => {
+module.exports.getProfile = async (req, res) => {
+	var id;
+	({ id } = req.params);
+	if (!id) {
+		({ userId: id } = req.body);
+	}
+	if (id.includes("@")) {
+		try {
+			const user = await User.findOne({ email: id });
+			req.user = user;
+		} catch (err) {
+			req.user = null;
+		}
+	} else {
+		try {
+			const user = await User.findById(id);
+			req.user = user;
+		} catch (err) {
+			req.user = null;
+		}
+	}
 	if (req.user) {
 		const {
 			email,
@@ -161,6 +181,7 @@ module.exports.getProfile = (req, res) => {
 			name,
 		} = req.user;
 		res.status(201).json({
+			ok:true,
 			email,
 			age,
 			lookingFor,
@@ -171,7 +192,7 @@ module.exports.getProfile = (req, res) => {
 			name,
 		});
 	} else {
-		res.status(404).json({ error: "User not found/not authenticated" });
+		res.status(404).json({ ok:false, error: "User not found/not authenticated" });
 	}
 };
 
@@ -281,7 +302,12 @@ module.exports.login = async (req, res) => {
 module.exports.getRelevantUsers = async (req, res) => {
 	const { userId } = req.body;
 	if (userId === "") {
-		res.json([]);
+		try {
+			const users = await User.find({ sample: true }).limit(5);
+			res.status(201).json(users);
+		} catch (err) {
+			console.log(err);
+		}
 		return;
 	}
 	try {

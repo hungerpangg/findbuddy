@@ -76,8 +76,6 @@ function Signin() {
 			? "is-invalid"
 			: "";
 
-	console.log(state);
-
 	return (
 		<div className="container w-50 mt-5">
 			<form className="needs-validation" onSubmit={handleSubmit}>

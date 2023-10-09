@@ -1,12 +1,11 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import AuthenticateContext from "../context/authenticate";
 import Match from "./Match";
 import { FaSearch } from "react-icons/fa";
 import { GoCircleSlash } from "react-icons/go";
 import * as bootstrap from "bootstrap";
 
-function Home() {
+function FrontPageHome() {
 	const noProfilePicture =
 		"https://findbuddy-pictures.s3.ap-southeast-1.amazonaws.com/no-profile-picture.jpeg";
 	const {
@@ -15,13 +14,14 @@ function Home() {
 	const [imageIndex, setImageIndex] = useState(0);
 	const [state, setState] = useState({
 		searchValue: "",
+		seenProfiles: [],
 		previousProfile: {},
 		currentProfile: {},
 		listOfProfiles: [],
+		forSearchingProfiles: [],
 		fetch: false,
 		searchFetch: false,
 	});
-	const navigate = useNavigate();
 
 	const handleModal = () => {
 		const myModal = document.getElementById("exampleModal2");
@@ -35,69 +35,35 @@ function Home() {
 		bootstrapModal.hide();
 	};
 
-	const acceptedBuddiesRef = useRef();
-	acceptedBuddiesRef.current = state.acceptedBuddies;
-	const rejectedBuddiesRef = useRef();
-	rejectedBuddiesRef.current = state.rejectedBuddies;
 	const currentSearchedValue = useRef();
 	if (!currentSearchedValue.current) currentSearchedValue.current = "";
 
 	const handleNextProfileAction = () => {
-		// handle frontend
 		var fetchState = false;
-		if (state.listOfProfiles.length <= 1 && state.searchFetch === false) {
-			fetchState = true;
-		}
-		var newList = state.listOfProfiles;
+		var newList = [...state.listOfProfiles];
 		var previousProfile = newList.shift();
+		if (state.listOfProfiles.length <= 1 && state.searchFetch === false) {
+			setState((prevState) => ({
+				...prevState,
+				listOfProfiles: state.forSearchingProfiles,
+				currentProfile: state.forSearchingProfiles[0],
+			}));
+			return;
+		}
 		setState((prevState) => ({
 			...prevState,
 			previousProfile,
 			currentProfile: newList[0],
 			listOfProfiles: newList,
-			fetch: fetchState,
 		}));
 	};
 
 	const handleLike = async () => {
 		handleNextProfileAction();
-		try {
-			const res = await fetch(`http://localhost:4000/like`, {
-				method: "POST",
-				body: JSON.stringify({
-					senderId: userId,
-					receiverId: state.currentProfile?._id,
-					senderEmail: email,
-					receiverEmail: state.currentProfile.email,
-				}),
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-			});
-			const data = await res.json();
-			if (data.mutual) {
-				handleModal();
-			}
-		} catch (err) {
-			console.log(err);
-		}
 	};
 
 	const handleReject = async () => {
 		handleNextProfileAction();
-		try {
-			const res = await fetch(`http://localhost:4000/rejection`, {
-				method: "POST",
-				body: JSON.stringify({
-					senderId: userId,
-					receiverId: state.currentProfile?._id,
-				}),
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-			});
-			const data = await res.json();
-		} catch (err) {
-			console.log(err);
-		}
 	};
 
 	const getProfiles = async () => {
@@ -113,6 +79,7 @@ function Home() {
 				...prevState,
 				listOfProfiles: data,
 				currentProfile: data[0],
+				forSearchingProfiles: data,
 				fetch: false,
 				searchFetch: false,
 			}));
@@ -129,26 +96,18 @@ function Home() {
 	};
 
 	const handleSearchSubmit = async (event) => {
-		if (event.key === "Enter" || event.type === "click")
-			try {
-				const res = await fetch(`http://localhost:4000/getsearchedusers`, {
-					method: "POST",
-					body: JSON.stringify({ searchValue: state.searchValue, userId }),
-					headers: { "Content-Type": "application/json" },
-					credentials: "include",
-				});
-				const { data } = await res.json();
-				currentSearchedValue.current = state.searchValue;
-				setState((prevState) => ({
-					...prevState,
-					listOfProfiles: data,
-					currentProfile: data[0],
-					fetch: false,
-					searchFetch: true,
-				}));
-			} catch (err) {
-				console.log(err);
-			}
+		if (event.key === "Enter" || event.type === "click") {
+			const searchedProfiles = state.forSearchingProfiles.filter((each) => {
+				return each.lookingFor
+					.toUpperCase()
+					.includes(state.searchValue.toUpperCase());
+			});
+			setState((prevState) => ({
+				...prevState,
+				listOfProfiles: searchedProfiles,
+				currentProfile: searchedProfiles[0],
+			}));
+		}
 	};
 
 	const handleClearFilter = () => {
@@ -162,9 +121,6 @@ function Home() {
 	};
 
 	useEffect(() => {
-		// if (!userId) {
-		// 	navigate("/");
-		// }
 		getProfiles();
 	}, [state.fetch, userId]);
 
@@ -174,7 +130,7 @@ function Home() {
 		renderedImages = state.currentProfile?.pictureUrls.map((url, index) => {
 			return (
 				<div class={`carousel-item ${index === 0 && "active"}`}>
-					<img class="d-block w-100" src={url} alt="First slide" />
+					<img class="d-block w-100 carouselImage" src={url} />
 				</div>
 			);
 		});
@@ -197,7 +153,7 @@ function Home() {
 
 	return (
 		<div className="d-flex flex-column justify-content-center">
-			<div className="input-group d-flex justify-content-center mt-5">
+			<div className="input-group d-flex justify-content-center mt-3">
 				<div className="form-outline">
 					<input
 						type="search"
@@ -228,7 +184,6 @@ function Home() {
 				{currentSearchedValue.current.length > 0 &&
 					`Currently searching for: ${currentSearchedValue.current}`}
 			</div>
-			<Match matchedUser={state.previousProfile} hideModal={hideModal} />
 			{state.listOfProfiles.length > 0 ? (
 				<div className="container d-flex flex-row align-items-center justify-content-center">
 					<button onClick={handleReject} className="btn btn-warning">
@@ -243,7 +198,7 @@ function Home() {
 							className="carousel slide"
 							data-ride="carousel"
 						>
-							<ol class="carousel-indicators">{renderedIndicators}</ol>
+							{/* <ol class="carousel-indicators">{renderedIndicators}</ol> */}
 							<div className="carousel-inner">{renderedImages}</div>
 							{state.currentProfile?.pictureUrls?.length > 0 && (
 								<a
@@ -336,4 +291,4 @@ function Home() {
 	);
 }
 
-export default Home;
+export default FrontPageHome;

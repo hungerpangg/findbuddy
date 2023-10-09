@@ -1,7 +1,11 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import Signout from "./Signout";
 
 function SignedInNavbar() {
+	const location = useLocation();
+	const currentPath = location.pathname;
+	console.log(currentPath, "currentPath");
+
 	return (
 		<nav className="navbar navbar-expand-sm navbar-light bg-light">
 			<div className="container">

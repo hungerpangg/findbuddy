@@ -10,6 +10,9 @@ import SignedOutNavbar from "./components/SignedOutNavbar";
 import "./index.css";
 import Home from "./components/Home";
 import Chat from "./components/Chat";
+import FrontPage from "./components/FrontPage";
+import PrivateRoute from "./components/PrivateRoute";
+import NotFound from "./components/NotFound";
 
 function App() {
 	const {
@@ -21,17 +24,70 @@ function App() {
 			<Router>
 				{isAuthenticated ? <SignedInNavbar /> : <SignedOutNavbar />}
 				<Routes>
-					{/* <Route path="/signin" /> */}
-					<Route path="/home" element={<Home />} />
-					<Route path="/signin" element={<Signin />} />
-					<Route path="/signup" element={<Signup />} />
-					<Route path="/signup2" element={<Signup2 />} />
+					<Route
+						path="/"
+						element={
+							<PrivateRoute
+								element={<Home />}
+								alternateElement={<FrontPage />}
+								isAuthenticated={isAuthenticated}
+							/>
+						}
+					/>
+					<Route
+						path="/home"
+						element={
+							<PrivateRoute
+								element={<Home />}
+								alternateElement={<FrontPage />}
+								isAuthenticated={isAuthenticated}
+							/>
+						}
+					/>
+					<Route
+						path="/signin"
+						element={
+							<PrivateRoute
+								element={<Home />}
+								alternateElement={<Signin />}
+								isAuthenticated={isAuthenticated}
+							/>
+						}
+					/>
+					<Route
+						path="/signup"
+						element={
+							<PrivateRoute
+								element={<Home />}
+								alternateElement={<Signup />}
+								isAuthenticated={isAuthenticated}
+							/>
+						}
+					/>
+					<Route
+						path="/signup2"
+						element={
+							<PrivateRoute
+								element={<Home />}
+								alternateElement={<Signup2 />}
+								isAuthenticated={isAuthenticated}
+							/>
+						}
+					/>
+					<Route
+						path="/chats"
+						element={
+							<PrivateRoute
+								element={<Chat />}
+								alternateElement={<Signin />}
+								isAuthenticated={isAuthenticated}
+							/>
+						}
+					/>
 					<Route path="/profile/:id" element={<Profile />} />
-					<Route path="/chats" element={<Chat />} />
+					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</Router>
-
-			{/* <Card/> */}
 		</div>
 	);
 }
