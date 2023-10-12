@@ -4,25 +4,8 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const routes = require("./src/routes/routes");
 const cors = require("cors");
-// const multer = require("multer");
 
 const app = express();
-
-// const storage = multer.diskStorage({
-// 	dest: (req, file, cb) => {
-// 		cb(null, "./uploads"); // The directory where files will be stored
-// 	},
-// 	filename: (req, file, cb) => {
-// 		cb(null, Date.now() + "-" + file.originalname); // Use a unique filename for each uploaded file
-// 	},
-// });
-// module.exports.upload = multer({
-// 	storage,
-// 	onError: (err, next) => {
-// 		console.error("Multer Error:", err);
-// 		next(err);
-// 	},
-// });
 
 // middleware
 app.use(express.json());

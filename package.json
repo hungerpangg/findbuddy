@@ -1,0 +1,24 @@
+{
+  "name": "findbuddy",
+  "version": "1.0.0",
+  "description": "A platform for people to find others with similar interests and hobbies",
+  "main": "index.js",
+  "scripts": {
+    "install-server": "cd findbuddy_server && npm install",
+    "start-server": "cd findbuddy_server && node app.js",
+    "install-client": "cd findbuddy_ui && npm install",
+    "build-client": "cd findbuddy_ui && npm run build",
+    "start-client": "cd findbuddy_ui && npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hungerpangg/findbuddy.git"
+  },
+  "keywords": [],
+  "author": "Pang Ka Wai",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hungerpangg/findbuddy/issues"
+  },
+  "homepage": "https://github.com/hungerpangg/findbuddy#readme"
+}
