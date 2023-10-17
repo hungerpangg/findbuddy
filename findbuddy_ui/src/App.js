@@ -64,16 +64,7 @@ function App() {
 							/>
 						}
 					/>
-					<Route
-						path="/signup2"
-						element={
-							<PrivateRoute
-								element={<Home />}
-								alternateElement={<Signup2 />}
-								isAuthenticated={isAuthenticated}
-							/>
-						}
-					/>
+					<Route path="/signup2" element={<Signup2 />} />
 					<Route
 						path="/chats"
 						element={

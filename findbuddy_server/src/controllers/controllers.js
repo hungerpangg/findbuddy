@@ -181,7 +181,7 @@ module.exports.getProfile = async (req, res) => {
 			name,
 		} = req.user;
 		res.status(201).json({
-			ok:true,
+			ok: true,
 			email,
 			age,
 			lookingFor,
@@ -192,7 +192,9 @@ module.exports.getProfile = async (req, res) => {
 			name,
 		});
 	} else {
-		res.status(404).json({ ok:false, error: "User not found/not authenticated" });
+		res
+			.status(404)
+			.json({ ok: false, error: "User not found/not authenticated" });
 	}
 };
 
@@ -322,7 +324,12 @@ module.exports.getRelevantUsers = async (req, res) => {
 			return rejectedUser.toString();
 		});
 		const usersSeen = [...usersLiked, ...usersRejected, userId];
-		const users = await User.find({ _id: { $nin: usersSeen } }).limit(5);
+		const users = await User.find({
+			_id: {
+				$nin: usersSeen,
+			},
+			$or: [{ sample: false }, { sample: { $exists: false } }],
+		}).limit(5);
 		res.status(201).json(users);
 	} catch (err) {
 		console.log(err);
@@ -346,7 +353,13 @@ module.exports.getSearchedUsers = async (req, res) => {
 		const usersSeen = [...usersLiked, ...usersRejected, userId];
 		const regex = new RegExp(searchValue, "i");
 		const searchedUsers = await User.find({
-			$and: [{ lookingFor: regex }, { _id: { $nin: usersSeen } }],
+			$and: [
+				{ lookingFor: regex },
+				{
+					_id: { $nin: usersSeen },
+					$or: [{ sample: false }, { sample: { $exists: false } }],
+				},
+			],
 		}).limit(5);
 
 		res.status(200).json({ ok: true, data: searchedUsers });
