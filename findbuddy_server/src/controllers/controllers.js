@@ -77,6 +77,7 @@ module.exports.signup_post = async (req, res) => {
 			maxAge: maxAge * 1000,
 			secure: true,
 			sameSite: "None",
+			domain: "https://findbuddy.onrender.com",
 			path: "/",
 		});
 		var { email, _id, name } = user;
