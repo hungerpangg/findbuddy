@@ -62,7 +62,7 @@ function Home() {
 	const handleLike = async () => {
 		handleNextProfileAction();
 		try {
-			const res = await fetch(`http://localhost:4000/like`, {
+			const res = await fetch(`https://findbuddy-server.onrender.com/like`, {
 				method: "POST",
 				body: JSON.stringify({
 					senderId: userId,
@@ -85,15 +85,18 @@ function Home() {
 	const handleReject = async () => {
 		handleNextProfileAction();
 		try {
-			const res = await fetch(`http://localhost:4000/rejection`, {
-				method: "POST",
-				body: JSON.stringify({
-					senderId: userId,
-					receiverId: state.currentProfile?._id,
-				}),
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-			});
+			const res = await fetch(
+				`https://findbuddy-server.onrender.com/rejection`,
+				{
+					method: "POST",
+					body: JSON.stringify({
+						senderId: userId,
+						receiverId: state.currentProfile?._id,
+					}),
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+				}
+			);
 			const data = await res.json();
 		} catch (err) {
 			console.log(err);
@@ -102,12 +105,15 @@ function Home() {
 
 	const getProfiles = async () => {
 		try {
-			const res = await fetch(`http://localhost:4000/getusers`, {
-				method: "POST",
-				body: JSON.stringify({ userId }),
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-			});
+			const res = await fetch(
+				`https://findbuddy-server.onrender.com/getusers`,
+				{
+					method: "POST",
+					body: JSON.stringify({ userId }),
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+				}
+			);
 			const data = await res.json();
 			setState((prevState) => ({
 				...prevState,
@@ -131,12 +137,15 @@ function Home() {
 	const handleSearchSubmit = async (event) => {
 		if (event.key === "Enter" || event.type === "click")
 			try {
-				const res = await fetch(`http://localhost:4000/getsearchedusers`, {
-					method: "POST",
-					body: JSON.stringify({ searchValue: state.searchValue, userId }),
-					headers: { "Content-Type": "application/json" },
-					credentials: "include",
-				});
+				const res = await fetch(
+					`https://findbuddy-server.onrender.com/getsearchedusers`,
+					{
+						method: "POST",
+						body: JSON.stringify({ searchValue: state.searchValue, userId }),
+						headers: { "Content-Type": "application/json" },
+						credentials: "include",
+					}
+				);
 				const { data } = await res.json();
 				currentSearchedValue.current = state.searchValue;
 				setState((prevState) => ({

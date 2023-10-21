@@ -35,8 +35,8 @@ function App() {
 						httpEquiv="Content-Security-Policy"
 						content={`
                       default-src 'self';
-                      script-src 'self' http://localhost:4000/;
-					  connect-src 'self' http://localhost:4000/ wss://api.chatengine.io/ https://api.chatengine.io/;
+                      script-src 'self' https://findbuddy-server.onrender.com/;
+					  connect-src 'self' https://findbuddy-server.onrender.com/ wss://api.chatengine.io/ https://api.chatengine.io/;
                       img-src 'self' https://findbuddy-pictures.s3.ap-southeast-1.amazonaws.com/ https://chat-engine-assets.s3.amazonaws.com/;
 					  style-src 'self' 'unsafe-inline';
 						

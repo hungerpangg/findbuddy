@@ -38,7 +38,7 @@ function Signup() {
 		let name = state.formDetails.name;
 		let country = state.formDetails.country;
 		try {
-			const res = await fetch("http://localhost:4000/signup", {
+			const res = await fetch("https://findbuddy-server.onrender.com/signup", {
 				method: "POST",
 				body: JSON.stringify({ email, name, password, country }),
 				headers: { "Content-Type": "application/json" },

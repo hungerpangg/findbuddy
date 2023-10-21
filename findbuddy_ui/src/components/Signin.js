@@ -33,7 +33,7 @@ function Signin() {
 		let email = state.formDetails.email;
 		let password = state.formDetails.password;
 		try {
-			const res = await fetch("http://localhost:4000/login", {
+			const res = await fetch("https://findbuddy-server.onrender.com/login", {
 				method: "POST",
 				body: JSON.stringify({ email, password }),
 				headers: { "Content-Type": "application/json" },

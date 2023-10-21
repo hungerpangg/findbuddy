@@ -56,7 +56,7 @@ function Provider({ children }) {
 			const payloadObject = JSON.parse(decodedPayload);
 			const { id } = payloadObject;
 			try {
-				const res = await fetch(`http://localhost:4000/profile/${id}`, {
+				const res = await fetch(`https://findbuddy-server.onrender.com/${id}`, {
 					method: "GET",
 					credentials: "include",
 				});
