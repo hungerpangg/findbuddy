@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
 	cors({
-		origin: "http://localhost:3000",
+		origin: "https://findbuddy.onrender.com",
 		methods: "GET,POST,PUT,DELETE", // The allowed HTTP methods
 		allowedHeaders: "Content-Type,Authorization", // The allowed request headers
 		credentials: true,
