@@ -35,6 +35,7 @@ function Signin() {
 		try {
 			const res = await fetch("https://findbuddy-server.onrender.com/login", {
 				method: "POST",
+				mode: "cors",
 				body: JSON.stringify({ email, password }),
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
