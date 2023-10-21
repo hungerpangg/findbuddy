@@ -73,7 +73,11 @@ module.exports.signup_post = async (req, res) => {
 	try {
 		const user = await User.create({ email, name, password, country });
 		const token = createToken(user._id);
-		res.cookie("jwt", token, { maxAge: maxAge * 1000, secure: true });
+		res.cookie("jwt", token, {
+			maxAge: maxAge * 1000,
+			secure: true,
+			sameSite: "None",
+		});
 		var { email, _id, name } = user;
 		const userId = _id.toString();
 		const r = await axios.post(
