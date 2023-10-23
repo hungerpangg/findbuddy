@@ -62,7 +62,7 @@ function Home() {
 	const handleLike = async () => {
 		handleNextProfileAction();
 		try {
-			const res = await fetch(`https://api.findbuddyhub.com/like`, {
+			const res = await fetch(`https://api.findbuddyhub.com:4000/like`, {
 				method: "POST",
 				body: JSON.stringify({
 					senderId: userId,
@@ -85,7 +85,7 @@ function Home() {
 	const handleReject = async () => {
 		handleNextProfileAction();
 		try {
-			const res = await fetch(`https://api.findbuddyhub.com/rejection`, {
+			const res = await fetch(`https://api.findbuddyhub.com:4000/rejection`, {
 				method: "POST",
 				body: JSON.stringify({
 					senderId: userId,
@@ -102,7 +102,7 @@ function Home() {
 
 	const getProfiles = async () => {
 		try {
-			const res = await fetch(`https://api.findbuddyhub.com/getusers`, {
+			const res = await fetch(`https://api.findbuddyhub.com:4000/getusers`, {
 				method: "POST",
 				body: JSON.stringify({ userId }),
 				headers: { "Content-Type": "application/json" },
@@ -132,7 +132,7 @@ function Home() {
 		if (event.key === "Enter" || event.type === "click")
 			try {
 				const res = await fetch(
-					`https://api.findbuddyhub.com/getsearchedusers`,
+					`https://api.findbuddyhub.com:4000/getsearchedusers`,
 					{
 						method: "POST",
 						body: JSON.stringify({ searchValue: state.searchValue, userId }),

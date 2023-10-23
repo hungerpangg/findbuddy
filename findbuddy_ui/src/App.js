@@ -35,9 +35,9 @@ function App() {
 						httpEquiv="Content-Security-Policy"
 						content={`
                       default-src 'self';
-                      script-src 'self' https://api.findbuddyhub.com/;
-					  connect-src 'self' https://api.findbuddyhub.com/ wss://api.chatengine.io/ https://api.chatengine.io/;
-                      img-src 'self' https://api.findbuddyhub.com/ https://findbuddy-pictures.s3.ap-southeast-1.amazonaws.com/ https://chat-engine-assets.s3.amazonaws.com/;
+                      script-src 'self' https://api.findbuddyhub.com:4000;
+					  connect-src 'self' https://api.findbuddyhub.com:4000 wss://api.chatengine.io/ https://api.chatengine.io/;
+                      img-src 'self' https://api.findbuddyhub.com:4000 https://findbuddy-pictures.s3.ap-southeast-1.amazonaws.com/ https://chat-engine-assets.s3.amazonaws.com/;
 					  style-src 'self' 'unsafe-inline';
 						
                 `}
