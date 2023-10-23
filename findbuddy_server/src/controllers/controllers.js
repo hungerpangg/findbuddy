@@ -77,7 +77,7 @@ module.exports.signup_post = async (req, res) => {
 			maxAge: maxAge * 1000,
 			secure: true,
 			sameSite: "None",
-			domain: "https://findbuddy.onrender.com",
+			domain: "https://findbuddyhub.com",
 			path: "/",
 		});
 		var { email, _id, name } = user;
@@ -293,7 +293,13 @@ module.exports.login = async (req, res) => {
 	try {
 		const user = await User.login(email, password);
 		const token = createToken(user._id);
-		res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+		res.cookie("jwt", token, {
+			maxAge: maxAge * 1000,
+			secure: true,
+			sameSite: "None",
+			domain: "https://findbuddyhub.com",
+			path: "/",
+		});
 		var { email, _id, name } = user;
 		const userId = _id.toString();
 
