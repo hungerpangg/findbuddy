@@ -68,7 +68,7 @@ function FrontPageHome() {
 
 	const getProfiles = async () => {
 		try {
-			const res = await fetch(`https://api.findbuddyhub.com:4000`, {
+			const res = await fetch(`https://api.findbuddyhub.com:4000/getusers`, {
 				method: "POST",
 				body: JSON.stringify({ userId }),
 				headers: { "Content-Type": "application/json" },
