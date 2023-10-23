@@ -62,7 +62,7 @@ function Home() {
 	const handleLike = async () => {
 		handleNextProfileAction();
 		try {
-			const res = await fetch(`https://findbuddy-server.onrender.com/like`, {
+			const res = await fetch(`https://api.findbuddyhub.com/like`, {
 				method: "POST",
 				body: JSON.stringify({
 					senderId: userId,
@@ -85,18 +85,15 @@ function Home() {
 	const handleReject = async () => {
 		handleNextProfileAction();
 		try {
-			const res = await fetch(
-				`https://findbuddy-server.onrender.com/rejection`,
-				{
-					method: "POST",
-					body: JSON.stringify({
-						senderId: userId,
-						receiverId: state.currentProfile?._id,
-					}),
-					headers: { "Content-Type": "application/json" },
-					credentials: "include",
-				}
-			);
+			const res = await fetch(`https://api.findbuddyhub.com/rejection`, {
+				method: "POST",
+				body: JSON.stringify({
+					senderId: userId,
+					receiverId: state.currentProfile?._id,
+				}),
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+			});
 			const data = await res.json();
 		} catch (err) {
 			console.log(err);
@@ -105,15 +102,12 @@ function Home() {
 
 	const getProfiles = async () => {
 		try {
-			const res = await fetch(
-				`https://findbuddy-server.onrender.com/getusers`,
-				{
-					method: "POST",
-					body: JSON.stringify({ userId }),
-					headers: { "Content-Type": "application/json" },
-					credentials: "include",
-				}
-			);
+			const res = await fetch(`https://api.findbuddyhub.com/getusers`, {
+				method: "POST",
+				body: JSON.stringify({ userId }),
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+			});
 			const data = await res.json();
 			setState((prevState) => ({
 				...prevState,
@@ -138,7 +132,7 @@ function Home() {
 		if (event.key === "Enter" || event.type === "click")
 			try {
 				const res = await fetch(
-					`https://findbuddy-server.onrender.com/getsearchedusers`,
+					`https://api.findbuddyhub.com/getsearchedusers`,
 					{
 						method: "POST",
 						body: JSON.stringify({ searchValue: state.searchValue, userId }),

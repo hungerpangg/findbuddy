@@ -68,15 +68,12 @@ function FrontPageHome() {
 
 	const getProfiles = async () => {
 		try {
-			const res = await fetch(
-				`https://findbuddy-server.onrender.com/getusers`,
-				{
-					method: "POST",
-					body: JSON.stringify({ userId }),
-					headers: { "Content-Type": "application/json" },
-					credentials: "include",
-				}
-			);
+			const res = await fetch(`https://api.findbuddyhub.com/`, {
+				method: "POST",
+				body: JSON.stringify({ userId }),
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+			});
 			const data = await res.json();
 			setState((prevState) => ({
 				...prevState,
