@@ -33,7 +33,7 @@ function Signin() {
 		let email = state.formDetails.email;
 		let password = state.formDetails.password;
 		try {
-			const res = await fetch("https://api.findbuddyhub.com:4000/login", {
+			const res = await fetch("https://api.findbuddyhub.com/login", {
 				method: "POST",
 				mode: "cors",
 				body: JSON.stringify({ email, password }),

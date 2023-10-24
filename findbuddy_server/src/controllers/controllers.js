@@ -289,6 +289,7 @@ module.exports.editProfile = (req, res) => {
 
 module.exports.login = async (req, res) => {
 	var { email, password } = req.body;
+	console.log(email, "emailFromLogin");
 
 	try {
 		const user = await User.login(email, password);
