@@ -70,7 +70,7 @@ function FrontPageHome() {
 		try {
 			const res = await fetch(`https://api.findbuddyhub.com/getusers`, {
 				method: "POST",
-				body: JSON.stringify({ userId }),
+				body: JSON.stringify({ userId: "" }),
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
 			});
