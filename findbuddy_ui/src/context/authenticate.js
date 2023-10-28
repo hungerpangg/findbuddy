@@ -14,7 +14,6 @@ function Provider({ children }) {
 
 	const checkJwtCookie = (cookieName) => {
 		const cookies = document.cookie.split(";");
-		console.log(cookies, "cookies");
 		for (const cookie of cookies) {
 			const [name, value] = cookie.trim().split("=");
 			if (name === cookieName) {
@@ -87,7 +86,7 @@ function Provider({ children }) {
 		setAuthenticatedState,
 	};
 
-	console.log(authenticatedState);
+	// console.log(authenticatedState);
 
 	return (
 		<AuthenticateContext.Provider value={valueToShare}>
