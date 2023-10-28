@@ -14,6 +14,7 @@ function Provider({ children }) {
 
 	const checkJwtCookie = (cookieName) => {
 		const cookies = document.cookie.split(";");
+		console.log(cookies, "cookies");
 		for (const cookie of cookies) {
 			const [name, value] = cookie.trim().split("=");
 			if (name === cookieName) {
