@@ -77,7 +77,7 @@ module.exports.signup_post = async (req, res) => {
 			maxAge: maxAge * 1000,
 			secure: true,
 			sameSite: "None",
-			domain: "https://findbuddyhub.com",
+			domain: ".findbuddyhub.com",
 			path: "/",
 		});
 		var { email, _id, name } = user;
@@ -444,6 +444,12 @@ module.exports.deleteAllLikes = async (req, res) => {
 };
 
 module.exports.logout = (req, res) => {
-	res.cookie("jwt", "", { maxAge: 1 });
+	res.cookie("jwt", "", {
+		maxAge: 1,
+		secure: true,
+		sameSite: "None",
+		domain: ".findbuddyhub.com",
+		path: "/",
+	});
 	res.status(200).json({ redirected: true });
 };
