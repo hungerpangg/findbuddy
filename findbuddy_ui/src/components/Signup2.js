@@ -41,7 +41,7 @@ function Signup() {
 			console.log(key, value);
 		}
 		try {
-			const res = await fetch("https://findbuddy-server.onrender.com/signup2", {
+			const res = await fetch("https://api.findbuddyhub.com/signup2", {
 				method: "POST",
 				body: formData,
 				credentials: "include",

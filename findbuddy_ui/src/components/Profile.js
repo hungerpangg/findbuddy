@@ -34,13 +34,10 @@ function Profile() {
 
 	const getProfile = async () => {
 		try {
-			const res = await fetch(
-				`https://findbuddy-server.onrender.com/profile/${id}`,
-				{
-					method: "GET",
-					credentials: "include",
-				}
-			);
+			const res = await fetch(`https://api.findbuddyhub.com/profile/${id}`, {
+				method: "GET",
+				credentials: "include",
+			});
 			const data = await res.json();
 			if (data.ok) {
 				setState((prevState) => {
@@ -85,14 +82,11 @@ function Profile() {
 			console.log(key, value);
 		}
 		try {
-			const res = await fetch(
-				"https://findbuddy-server.onrender.com/editprofile",
-				{
-					method: "POST",
-					body: formData,
-					credentials: "include",
-				}
-			);
+			const res = await fetch("https://api.findbuddyhub.com/editprofile", {
+				method: "POST",
+				body: formData,
+				credentials: "include",
+			});
 			const data = await res.json();
 
 			if (data.ok) {
