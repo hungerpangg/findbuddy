@@ -298,7 +298,7 @@ module.exports.login = async (req, res) => {
 			maxAge: maxAge * 1000,
 			secure: true,
 			sameSite: "None",
-			// domain: "app.findbuddyhub.com",
+			domain: ".findbuddyhub.com",
 			path: "/",
 		});
 		var { email, _id, name } = user;
