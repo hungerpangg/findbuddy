@@ -8,7 +8,7 @@ function Signout() {
 	const { setAuthenticatedState } = useContext(AuthenticateContext);
 	const handleSignout = async () => {
 		try {
-			const res = await fetch("http://api.findbuddyhub/logout", {
+			const res = await fetch("https://api.findbuddyhub/logout", {
 				method: "GET",
 				credentials: "include",
 			});
