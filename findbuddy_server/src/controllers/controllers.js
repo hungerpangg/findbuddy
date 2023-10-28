@@ -439,6 +439,7 @@ module.exports.rejection = async (req, res) => {
 };
 
 module.exports.deleteAllLikes = async (req, res) => {
+	console.log("Delete ran!");
 	const deleteLikes = await Like.deleteMany({});
 };
 
