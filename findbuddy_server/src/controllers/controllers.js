@@ -237,6 +237,7 @@ module.exports.editProfile = (req, res) => {
 							};
 							try {
 								const result = await s3.deleteObjects(params).promise();
+								console.log(result, "result from delete objects");
 							} catch (error) {
 								console.log("Error deleting objects", error);
 							}
