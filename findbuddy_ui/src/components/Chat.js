@@ -40,7 +40,7 @@ function Chat() {
 		<div>
 			{currentUser.username.length > 0 && (
 				<ChatEngine
-					projectID="8b30bb67-b4e9-483f-9aa3-e8ff9d53363b"
+					projectID="38dafd7f-259c-4ce9-8bd8-b1953a875ebf"
 					userName={currentUser.username}
 					userSecret={currentUser.secret}
 					// Customize UI
