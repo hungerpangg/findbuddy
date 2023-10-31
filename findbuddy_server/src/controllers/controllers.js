@@ -361,9 +361,9 @@ module.exports.getRelevantUsers = async (req, res) => {
 				$nin: usersSeen,
 			},
 			$or: [
-				{ sample: false },
+				{ sample: { $ne: true } },
 				{ sample: { $exists: false } },
-				{ admin: false },
+				{ admin: { $ne: true } },
 				{ admin: { $exists: false } },
 			],
 		}).limit(5);
