@@ -360,11 +360,9 @@ module.exports.getRelevantUsers = async (req, res) => {
 			_id: {
 				$nin: usersSeen,
 			},
-			$or: [
-				{ sample: { $ne: true } },
-				{ sample: { $exists: false } },
-				{ admin: { $ne: true } },
-				{ admin: { $exists: false } },
+			$and: [
+				{ $or: [{ sample: { $ne: true } }, { sample: { $exists: false } }] },
+				{ $or: [{ admin: { $ne: true } }, { admin: { $exists: false } }] },
 			],
 		}).limit(5);
 		res.status(201).json(users);
