@@ -93,6 +93,24 @@ module.exports.signup_post = async (req, res) => {
 			{ headers: { "private-key": process.env.CHATENGINE_PRIVATE_KEY } }
 		);
 		res.status(201).json({ redirected: true, data: { email, userId } });
+		var raw = {
+			usernames: ["Admin"],
+			is_direct_chat: true,
+		};
+		var config = {
+			method: "put",
+			url: "https://api.chatengine.io/chats/",
+			headers: {
+				"Project-ID": process.env.CHATENGINE_PROJECT_ID,
+				"User-Name": email,
+				"User-Secret": _id,
+				"Content-Type": "application/json",
+			},
+			data: JSON.stringify(raw),
+		};
+		axios(config)
+			.then((response) => console.log(response))
+			.catch((error) => console.log("error", error));
 	} catch (err) {
 		console.log(err);
 		const errors = handleErrors(err);
@@ -342,7 +360,12 @@ module.exports.getRelevantUsers = async (req, res) => {
 			_id: {
 				$nin: usersSeen,
 			},
-			$or: [{ sample: false }, { sample: { $exists: false } }],
+			$or: [
+				{ sample: false },
+				{ sample: { $exists: false } },
+				{ admin: false },
+				{ admin: { $exists: false } },
+			],
 		}).limit(5);
 		res.status(201).json(users);
 	} catch (err) {
