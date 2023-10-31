@@ -227,7 +227,7 @@ function Profile() {
 			</div>
 			{isEditMode ? (
 				// Render the edit form when in edit mode
-				<div className="container w-50 mt-5">
+				<div className="container w-80 mt-5">
 					<h2 className="d-flex justify-content-center">Edit Profile</h2>
 					<form
 						className="needs-validation"
