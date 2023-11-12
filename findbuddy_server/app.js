@@ -14,10 +14,14 @@ app.use(
 	cors({
 		origin: [
 			"https://app.findbuddyhub.com",
-			"116.203.129.16",
-			"116.203.134.67",
-			"23.88.105.37",
-			"128.140.8.200",
+			"https://116.203.129.16",
+			"https://116.203.134.67",
+			"https://23.88.105.37",
+			"https://128.140.8.200",
+			"http://116.203.129.16",
+			"http://116.203.134.67",
+			"http://23.88.105.37",
+			"http://128.140.8.200",
 		],
 		methods: "GET,POST,PUT,DELETE", // The allowed HTTP methods
 		allowedHeaders: "Content-Type,Authorization", // The allowed request headers
