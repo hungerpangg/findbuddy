@@ -308,6 +308,10 @@ module.exports.editProfile = (req, res) => {
 
 module.exports.login = async (req, res) => {
 	var { email, password } = req.body;
+	const origin = req.get('Origin');
+	console.log('Request from origin: ', origin);
+	console.log('Request body: ', req.body);
+	console.log('Request headers:', req.headers);
 	console.log(email, "emailFromLogin");
 
 	try {
