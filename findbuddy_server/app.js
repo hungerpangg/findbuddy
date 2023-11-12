@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
 	cors({
-		origin: "https://app.findbuddyhub.com",
+		origin: ["https://app.findbuddyhub.com", /\.cron-job\.org$/],
 		methods: "GET,POST,PUT,DELETE", // The allowed HTTP methods
 		allowedHeaders: "Content-Type,Authorization", // The allowed request headers
 		credentials: true,
