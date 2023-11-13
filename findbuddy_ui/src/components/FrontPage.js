@@ -30,7 +30,9 @@ function FrontPage() {
 			</div>
 			<div>
 				<div style={{ margin: "1em 1em", textAlign: "center" }}>
-					<b>Test it out with a few sample accounts:</b>
+					<b style={{ display: "block" }}>
+						Test it out with a few sample accounts:
+					</b>
 					Search for people who have similar interests or hobbies as you!
 				</div>
 			</div>
