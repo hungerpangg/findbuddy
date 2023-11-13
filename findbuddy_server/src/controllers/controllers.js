@@ -94,7 +94,7 @@ module.exports.signup_post = async (req, res) => {
 		);
 		res.status(201).json({ redirected: true, data: { email, userId } });
 		var raw = {
-			usernames: ["Admin"],
+			usernames: ["admin@findbuddy.com"],
 			is_direct_chat: true,
 		};
 		var config = {
@@ -308,10 +308,10 @@ module.exports.editProfile = (req, res) => {
 
 module.exports.login = async (req, res) => {
 	var { email, password } = req.body;
-	const origin = req.get('Origin');
-	console.log('Request from origin: ', origin);
-	console.log('Request body: ', req.body);
-	console.log('Request headers:', req.headers);
+	const origin = req.get("Origin");
+	console.log("Request from origin: ", origin);
+	console.log("Request body: ", req.body);
+	console.log("Request headers:", req.headers);
 	console.log(email, "emailFromLogin");
 
 	try {
